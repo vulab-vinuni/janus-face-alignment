@@ -19,6 +19,8 @@ The study covers 108 Janus X–A–M–Q monolayers (X = S, Se, Te; A = Al, Ga, 
 | `data/blind_test/blind60_predictions_FROZEN.csv` | Blind-test predictions recorded **before** the DFT calculations (not modified afterwards) |
 | `data/blind_test/blind_eval.csv` | DFT results of the 59 completed blind interfaces and their evaluation |
 | `data/phonons/` | Phonon summary (`phon108_summary.csv`) and dispersions (`bands/*.npz`) of the 108 monolayers from the fine-tuned MACE potential |
+| `models/mace/` | Fine-tuned MACE potential (`xamq_B330.model`, from MACE-MP-0 medium) with its training (`train_B330.xyz`, 8 580 configurations), validation (966) and test (23) sets; extended XYZ with `REF_energy`, `REF_forces`, `REF_stress` from QE PBE |
+| `data/monolayers/monolayers108_relaxed.extxyz` | Relaxed unit cells of the 108 monolayers (PBE+D3(BJ), QE) |
 | `models/model_frozen.json` | Frozen parameters of the contact-resolved model (S_XX, S_XQ, S_QQ, d_int) and classifier thresholds used in the blind test |
 | `workflow/qe/` | Quantum ESPRESSO workflow: monolayer strain grid, effective masses, bilayer relaxation and post-processing (layer projection, electrostatic potential), result assembly |
 | `analysis/` | Linear-response models, ML residual, localization and SBO classifiers, blind-test selection and evaluation, alignment-map prediction, MACE phonon and MD scripts |
