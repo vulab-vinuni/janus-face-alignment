@@ -13,6 +13,8 @@ The study covers 108 Janus X–A–M–Q monolayers (X = S, Se, Te; A = Al, Ga, 
 | `data/monolayers/monolayers_strain_grid.csv` | 108 monolayers × 9 biaxial strains (−2 … +2 %): lattice constant, total energy, band edges, vacuum levels on the X and Q sides, face-resolved IP/EA, vacuum-level step `dEvac`, DOS effective masses |
 | `data/monolayers/formation_energy.csv` | Formation energy per atom relative to the elemental ground states (PBE+D3(BJ)) and PBE gap |
 | `data/heterostructures/het832_dft.csv` | All 832 DFT heterostructures: monolayer descriptors at the common lattice constant, stacking, layer-resolved band edges (`VBM1`, `CBM1`, `VBM2`, `CBM2`), vacuum step across the bilayer `dPhi_bi`, band-edge layer weight `w_min`, binding energy `Eb_meV_A2`, interface dipoles `eVh_A` (band-resolved) and `eVh_B` (electrostatic), DFT alignment type |
+| `data/heterostructures/het832_relaxed.extxyz` | Relaxed geometries of the 832 heterostructures in their lowest-energy stacking (PBE+D3(BJ), fixed in-plane cell, c = 35 Å); `info` holds id, stack, layers, faces and contact type |
+| `data/heterostructures/het_all_stackings_relaxed.extxyz` | All 1 099 relaxed configurations, including the six stackings of the pilot set and the blind-test interfaces (`lowest_stack`, `in_dft832` flags) |
 | `data/heterostructures/het599_training_set.csv` | The 599 gapped heterostructures used for fitting, with out-of-fold predictions of each model |
 | `data/predictions/interfaces7796_descriptors.csv` | Monolayer descriptors of all 7 796 lattice-matched face-resolved interfaces |
 | `data/predictions/alignment_map7796.csv` | Predicted dipole, alignment type, band offsets, localization probability `p_local`, SBO class and confidence regime |
