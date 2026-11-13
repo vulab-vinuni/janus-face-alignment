@@ -1,0 +1,29 @@
+{
+ "S": {
+  "QQ": 0.5319180367198172,
+  "QX": 0.6873663736768819,
+  "XX": 0.8164520007224507
+ },
+ "d_int": 0.35007762955469024,
+ "svm": {
+  "svc__C": 1.0,
+  "svc__gamma": 0.03125
+ },
+ "svm_cols": [
+  "Em_sum",
+  "|Em_diff|",
+  "Eg_sum",
+  "|Eg_diff|",
+  "mc_sum",
+  "|mc_diff|",
+  "|mv_diff|",
+  "EN_sum",
+  "|EN_diff|",
+  "s_sum",
+  "|s_diff|"
+ ],
+ "loc_thr": 0.3,
+ "n_train": 599,
+ "date": "2026-11-12",
+ "hybrid": "gLR-contact + GBR(400,d3,lr0.03) h\u1ecdc ph\u1ea7n d\u01b0 eVh_B, kho\u00e1 12/11 tr\u01b0\u1edbc DFT"
+}
