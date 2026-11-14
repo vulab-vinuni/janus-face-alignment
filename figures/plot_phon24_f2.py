@@ -17,10 +17,10 @@ with PdfPages("phonon108_F2_24.pdf") as pdf:
             ax.axhline(0, c="k", lw=.5, ls=":"); ax.set_xlim(x[0], x[-1]); top = max(350, w.max() * 1.05); ax.set_ylim(min(-25, w.min() * 1.3), top)
             ax.set_xticks(xt); ax.set_xticklabels(["Γ", "M", "K", "Γ"]); ax.tick_params(axis="x", which="minor", bottom=False, top=False)
             st = D.loc[n, "status"]; col = {"stable": "#2E7D32", "ZA_noise": "#B26A00", "CHECK": "#C0392B", "UNSTABLE": "#C0392B"}[st]
-            ax.set_title(f"{n}", fontsize=8, pad=9); ax.text(.5, 1.015, {"stable":"stable","ZA_noise":"ZA pocket near Γ"}[st], transform=ax.transAxes, ha="center", va="bottom", fontsize=6.2, color=col)
+            ax.set_title(f"{n}", fontsize=8, pad=3)
             if k % 4 == 0: ax.set_ylabel("Frequency (cm$^{-1}$)")
             else: ax.set_yticklabels([])
-        fig.suptitle(f"Phonon dispersions, MACE fine-tuned (F2) screening — {p + 1}–{min(p + 24, len(names))} of {len(names)}", fontsize=8.5, y=.925 if nrow == 6 else .96)
+        fig.suptitle(f"Phonon dispersions, fine-tuned MACE — {p + 1}–{min(p + 24, len(names))} of {len(names)}", fontsize=8.5, y=.925 if nrow == 6 else .96)
         pdf.savefig(fig, bbox_inches="tight"); plt.close(fig)
         if p == 0: fig.savefig("phon_p1.png", dpi=110, bbox_inches="tight") if False else None
 print("ok")
