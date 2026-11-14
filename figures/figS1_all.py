@@ -1,4 +1,4 @@
-"""Supplementary Fig. 1: (a,b) SeInPbP MACE vs DFPT; (c) cost; (d–i) six Al–Sb compounds MACE vs VASP 3x3."""
+"""Hình S1 gộp: (a,b) SeInPbP MACE vs DFPT; (c–h) 6 chất Al–Sb MACE vs VASP 3x3; (i,j) chi phí."""
 import yaml, numpy as np, matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 plt.rcParams.update({"font.family":"DejaVu Sans","font.size":8,"axes.linewidth":1,"xtick.direction":"in","ytick.direction":"in","xtick.top":True,"ytick.right":True,"mathtext.default":"regular"})
 RED, BLU = "#C0392B", "#2E6DB4"; DSH = (3.2, 1.8)
@@ -59,7 +59,7 @@ for i, c in enumerate(C):
     Xv = np.concatenate([L1 - (d[s1] - d[0]), L1 + (L3 - (d[s3] - d[202])), L1 + L3 + (L2 - (d[s2] - d[101]))])
     t = np.linspace(0, 1, 101); Fv = np.concatenate([1 - t, 2 - t, 3 - t]); Wv = np.vstack([f[s1], f[s3], f[s2]])
     dd, mm = panel(ax, Xv, Wv, Fv, [0, L1, L1 + L3, L1 + L3 + L2], c); ax.set_ylim(-35, 365)
-    ax.set_title(f"{c} ({GP.get(c, 'semimetal')}), VASP\n$R^2$ = {r2(dd.ravel(), mm.ravel()):.3f}, MAE = {np.abs(dd - mm).mean():.1f} cm$^{{-1}}$", fontsize=7.3, pad=3)
+    ax.set_title(f"{c} ({GP.get(c, 'metal')}), VASP\n$R^2$ = {r2(dd.ravel(), mm.ravel()):.3f}, MAE = {np.abs(dd - mm).mean():.1f} cm$^{{-1}}$", fontsize=7.3, pad=3)
     print(c, r2(dd.ravel(), mm.ravel()), np.abs(dd - mm).mean())
     if i % 3 == 0: ax.set_ylabel("Frequency (cm$^{-1}$)")
     else: ax.set_yticklabels([])
