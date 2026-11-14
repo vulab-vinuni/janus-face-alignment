@@ -1,4 +1,4 @@
-"""Hình S1 gộp: (a,b) SeInPbP MACE vs DFPT; (c–h) 6 chất Al–Sb MACE vs VASP 3x3; (i,j) chi phí."""
+"""Supplementary Fig. 1: (a,b) SeInPbP MACE vs DFPT; (c) cost; (d–i) six Al–Sb compounds MACE vs VASP 3x3."""
 import yaml, numpy as np, matplotlib; matplotlib.use("Agg"); import matplotlib.pyplot as plt
 plt.rcParams.update({"font.family":"DejaVu Sans","font.size":8,"axes.linewidth":1,"xtick.direction":"in","ytick.direction":"in","xtick.top":True,"ytick.right":True,"mathtext.default":"regular"})
 RED, BLU = "#C0392B", "#2E6DB4"; DSH = (3.2, 1.8)
