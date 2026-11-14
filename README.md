@@ -20,8 +20,8 @@ The study covers 108 Janus X–A–M–Q monolayers (X = S, Se, Te; A = Al, Ga, 
 | `data/predictions/alignment_map7796.csv` | Predicted dipole, alignment type, band offsets, localization probability `p_local`, SBO class and confidence regime |
 | `data/blind_test/blind60_predictions_FROZEN.csv` | Blind-test predictions recorded **before** the DFT calculations (not modified afterwards) |
 | `data/blind_test/blind_eval.csv` | DFT results of the 59 completed blind interfaces and their evaluation |
-| `data/phonons/` | Phonon summary (`phon108_summary.csv`) and dispersions (`bands/*.npz`) of the 108 monolayers from the fine-tuned MACE potential |
-| `models/mace/` | Fine-tuned MACE potential (`xamq_B330.model`, from MACE-MP-0 medium) with its training (`train_B330.xyz`, 8 580 configurations), validation (966) and test (23) sets; extended XYZ with `REF_energy`, `REF_forces`, `REF_stress` from QE PBE |
+| `data/phonons/` | Phonon summary (`phon108_summary.csv`; `status_raw` is the automatic label before reassigning near-Γ pockets with mixed polarisation) and dispersions (`bands/*.npz`, Γ–M–K–Γ) of the 108 monolayers from `xamq_F2.model` |
+| `models/mace/` | Fine-tuned MACE potential used in the paper (`xamq_F2.model`; two-stage fine-tuning from MACE-MP-0 medium via `xamq_F.model`) and its data set (`train_F.xyz`, 9 453; `valid_F.xyz`, 1 093 configurations; extended XYZ with `REF_energy`, `REF_forces`, `REF_stress` from QE PBE). All configurations of 15 compounds, including SeInPbP and TeAlSnSb, are excluded. `archive_B330/` holds an earlier model for reference |
 | `data/monolayers/monolayers108_relaxed.extxyz` | Relaxed unit cells of the 108 monolayers (PBE+D3(BJ), QE) |
 | `models/model_frozen.json` | Frozen parameters of the contact-resolved model (S_XX, S_XQ, S_QQ, d_int) and classifier thresholds used in the blind test |
 | `workflow/qe/` | Quantum ESPRESSO workflow: monolayer strain grid, effective masses, bilayer relaxation and post-processing (layer projection, electrostatic potential), result assembly |
