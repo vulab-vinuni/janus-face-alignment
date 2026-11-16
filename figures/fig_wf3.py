@@ -5,13 +5,38 @@ import matplotlib.patheffects as pe
 from ase.io import read
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 7.0, "xtick.direction": "in", "ytick.direction": "in", "xtick.top": True, "ytick.right": True, "axes.linewidth": .8, "mathtext.default": "regular"})
 plt.rcParams.update({"font.size": 9.5, "axes.labelsize": 10, "axes.labelweight": "bold", "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 8.5, "mathtext.fontset": "cm", "mathtext.default": "it"})
+import re as _re
+def _bm(s):
+    if "$" not in s: return s
+    parts=s.split("$")
+    for i in range(1,len(parts),2):
+        m=parts[i]; out=""; j=0
+        toks=_re.findall(r"\\[A-Za-z]+|[A-Za-z]+|[0-9.]+|\{[^{}]*\}|.",m)
+        k=0
+        while k<len(toks):
+            t=toks[k]
+            if t in ("\\mathrm","\\mathbf","\\text"):
+                out+="\\mathbf"; k+=1
+                if k<len(toks): out+=toks[k]
+            elif t.startswith("\\") and t[1:2].isupper(): out+="\\mathbf{"+t+"}"
+            elif t.startswith("\\") and t[1:] in ("alpha","beta","gamma","delta","chi","rho","sigma","phi","psi","omega","epsilon","mu","nu","eta","theta","tau","lambda","kappa","xi","pi"): out+="\\mathbfit{"+t+"}"
+            elif t.startswith("\\"): out+=t
+            elif t[0].isalpha(): out+="\\mathbfit{"+t+"}"
+            elif t[0].isdigit(): out+="\\mathbf{"+t+"}"
+            elif t.startswith("{"): out+="{"+_bm("$"+t[1:-1]+"$")[1:-1]+"}"
+            else: out+=t
+            k+=1
+        parts[i]=out
+    return "$".join(parts)
 def _boldticks(fig):
+    for _a in fig.axes:
+        _a.set_xlabel(_bm(_a.get_xlabel())); _a.set_ylabel(_bm(_a.get_ylabel()))
     fig.canvas.draw()
     for _a in fig.axes:
         for _t in _a.get_xticklabels() + _a.get_yticklabels(): _t.set_fontweight("bold")
 
 INK, MUTE, ARR = "k", "k", "#E8A86B"
-EL = {"Se": "#E08E2B", "Al": "#6F9FD8", "Sn": "#4F4F6F", "As": "#C04A7A"}   # same colours as the X/A/M/Q planes in Fig. 2
+EL = {"Se": "#E08E2B", "Al": "#6F9FD8", "Sn": "#4F4F6F", "As": "#C04A7A"}   # same colours as the X/A/M/Q planes in Fig. 2   # màu kiểu VESTA (Se vàng-lục, As tím)
 RAD = {"Se": .55, "Al": .48, "Sn": .62, "As": .55}
 TY = {"I": "#4C72B0", "II": "#DD8452", "III": "#8172B3"}
 fig = plt.figure(figsize=(7.2, 5.4)); W = fig.add_axes([0, 0, 1, 1]); W.set_xlim(0, 100); W.set_ylim(0, 75); W.axis("off")
