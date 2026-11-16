@@ -13,14 +13,14 @@ P = T[T.pair == "SeAlSnAs|TeGaGeP"].copy(); P["lab"] = P.f1 + P.f2; P = P.set_in
 fig = plt.figure(figsize=(7.3, 4.3))
 gs = fig.add_gridspec(2, 4, height_ratios=[.9, 2.5], hspace=.08, wspace=.12, left=.08, right=.99, top=.9, bottom=.09)
 for i, (lb, r) in enumerate(P.iterrows()):
-    # --- sơ đồ hai lớp: lớp 1 (SeAlSnAs) ở dưới, lớp 2 (TeInSiAs) ở trên; mặt tiếp xúc ở giữa
+    # --- bilayer sketch: layer 1 (SeAlSnAs) at the bottom, layer 2 (TeInSiAs) on top; contact faces in the middle
     a = fig.add_subplot(gs[0, i]); a.axis("off"); a.set_xlim(0, 1); a.set_ylim(-.05, 2.55)
     def stack(y0, contact_face, flip):
-        seq = ["X", "A", "M", "Q"]                       # từ dưới lên khi mặt X ở dưới
+        seq = ["X", "A", "M", "Q"]                       # bottom to top when the X face is at the bottom
         if contact_face == "X": seq = seq[::-1] if not flip else seq
         else: seq = seq if not flip else seq[::-1]
         return [(y0 + k * .27, e) for k, e in enumerate(seq)]
-    # lớp dưới: mặt tiếp xúc ở trên cùng; lớp trên: mặt tiếp xúc ở dưới cùng
+    # bottom layer: contact face on top; top layer: contact face at the bottom
     low = ["X", "A", "M", "Q"] if r.f1 == "Q" else ["Q", "M", "A", "X"]
     up = ["X", "A", "M", "Q"] if r.f2 == "X" else ["Q", "M", "A", "X"]
     for k, e in enumerate(low): a.add_patch(Rectangle((.18, .05 + k * .26), .64, .21, fc=ROW[e], ec="none"))
@@ -28,7 +28,7 @@ for i, (lb, r) in enumerate(P.iterrows()):
     a.add_patch(Rectangle((.13, 1.0), .74, .4, fc="none", ec="0.35", lw=.8, ls=":"))
     a.add_patch(Rectangle((.06, .02), .05, 1.02, fc=L1C, ec="none")); a.add_patch(Rectangle((.06, 1.32), .05, 1.04, fc=L2C, ec="none"))
     a.text(.5, 2.52, lb, ha="center", va="bottom", fontsize=10, fontweight="bold", color=CC[lb])
-    # --- giản đồ cạnh vùng theo lớp
+    # --- layer-resolved band-edge diagram
     ax = fig.add_subplot(gs[1, i])
     for L, x0, col in ((1, .2, L1C), (2, .58, L2C)):
         v, c = r[f"VBM{L}"], r[f"CBM{L}"]
