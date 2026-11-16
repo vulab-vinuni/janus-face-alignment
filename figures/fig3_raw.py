@@ -4,6 +4,12 @@ from sklearn.model_selection import GroupKFold
 from glr import r2, fit
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8.5, "axes.linewidth": 1.0, "xtick.direction": "in", "ytick.direction": "in",
     "xtick.top": True, "ytick.right": True, "xtick.minor.visible": True, "ytick.minor.visible": True, "savefig.dpi": 300, "legend.frameon": False, "mathtext.default": "regular"})
+plt.rcParams.update({"font.size": 9.5, "axes.labelsize": 10, "axes.labelweight": "bold", "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 8.5, "mathtext.fontset": "cm", "mathtext.default": "it"})
+def _boldticks(fig):
+    fig.canvas.draw()
+    for _a in fig.axes:
+        for _t in _a.get_xticklabels() + _a.get_yticklabels(): _t.set_fontweight("bold")
+
 C = {"XX": "#2F5DA8", "QX": "#2E9E62", "QQ": "#C0392B"}; LB = {"XX": "XX", "QX": "XQ", "QQ": "QQ"}
 T = pd.read_csv("train_oof.csv"); g = (T.L1 + "|" + T.L2).values
 EN = dict(S=2.58, Se=2.55, Te=2.10, P=2.19, As=2.18, Sb=2.05)
@@ -21,8 +27,8 @@ full = fit(T, "eVh_B", "glr", "contact")
 x = T.dE.abs(); y = T.eVh_B * np.sign(T.dE); h = x - (T.Eg1 + T.Eg2) / 2; ax = A[0]; xx = np.linspace(0, x.max(), 10)
 for c in ("XX", "QX", "QQ"):
     m = T.contact == c; ax.scatter(x[m], y[m], s=5, c=C[c], alpha=.6, lw=0, label=f"{LB[c]} (S = {full['S'][c]:.2f})"); ax.plot(xx, (1 - full["S"][c]) * xx, c=C[c], lw=1.3)
-ax.plot(xx, xx, "k:", lw=.7); ax.text(1.5, 1.42, "S = 0", fontsize=6.5, ha="right", rotation=0)
-ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$eV_h\,\mathrm{sgn}(\Delta E_m)$ DFT (eV)", ylim=(-.3, 1.7)); ax.legend(loc="upper left", fontsize=6.3, markerscale=2, handletextpad=.1)
+ax.plot(xx, xx, "k:", lw=.7); ax.text(1.66, 1.08, "S = 0", fontsize=8, ha="right", va="top", rotation=0)
+ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$eV_h\,\mathrm{sgn}(\Delta E_m)$ DFT (eV)", ylim=(-.3, 1.7)); ax.legend(loc="upper left", fontsize=8, markerscale=2, handletextpad=.1, borderaxespad=.2)
 # (b) test of the charge-spillage threshold
 ax = A[1]
 for c in ("XX", "QX", "QQ"):
@@ -36,7 +42,7 @@ for k, (col_, t) in enumerate((("oof_slr", "global S"), ("oof_glrc", "S by conta
         d = T[T.contact == c]; ax.scatter(d[col_], d.eVh_B, s=5, c=C[c], alpha=.7, lw=0, label=LB[c])
     lim = (-.85, .85); ax.plot(lim, lim, c="k", lw=.6); ax.set(xlim=lim, ylim=lim, xlabel=r"$eV_h$ model (eV)")
     ax.text(.04, .96, f"{t}\n$r^2$ = {r2(T.eVh_B, T[col_]):.2f}", transform=ax.transAxes, va="top", fontsize=6.8)
-axs[0].set_ylabel(r"$eV_h$ DFT (eV)"); axs[1].set_ylabel(r"$eV_h$ DFT (eV)"); axs[1].legend(loc="lower right", fontsize=6.5, markerscale=2, handletextpad=.1)
+axs[0].set_ylabel(r"$eV_h$ DFT (eV)"); axs[1].set_ylabel(r"$eV_h$ DFT (eV)"); axs[1].legend(loc="lower right", fontsize=8, markerscale=2, handletextpad=.1)
 Ss = {c: [] for c in ("XX", "QX", "QQ")}
 for tr, te in GroupKFold(5).split(T, groups=g):
     q = fit(T.iloc[tr].reset_index(drop=True), "eVh_B", "glr", "contact")
@@ -56,7 +62,7 @@ for lo, hi in zip(bins[:-1], bins[1:]):
 ax.errorbar(xs, ys, yerr=es, fmt="o", c="k", ms=3.5, capsize=2, label="binned DFT")
 xx = np.linspace(T.ENs.min(), T.ENs.max(), 100); a = np.exp(P[0] + P[1] * (xx - mu) / sd); ax.plot(xx, 1 / (1 + a), c="#C0392B", lw=1.2, label="fit")
 for c, xr in (("QQ", 4.36), ("QX", 4.73), ("XX", 5.10)): ax.axvline(xr, c=C[c], lw=.6, ls=":"); ax.text(xr, .965, LB[c], color=C[c], fontsize=6.5, ha="center", va="top")
-ax.set(xlabel=r"$\chi_1+\chi_2$ of contact atoms", ylabel="S", ylim=(.3, 1.0)); ax.legend(loc="lower right", fontsize=6.3, bbox_to_anchor=(1.0, 0.0))
-for k, a_ in enumerate(A): a_.text(-.3, 1.03, "abcdef"[k], transform=a_.transAxes, fontweight="bold", fontsize=9)
-fig.savefig("fig2.png", bbox_inches="tight", dpi=170); fig.savefig("fig2.pdf", bbox_inches="tight")
+ax.set(xlabel=r"$\chi_1+\chi_2$ of contact atoms", ylabel="S", ylim=(.3, 1.0)); ax.legend(loc="lower right", fontsize=8, bbox_to_anchor=(1.03, -0.02), handlelength=1.2)
+for k, a_ in enumerate(A): a_.text(-.32, 1.07, "abcdef"[k], transform=a_.transAxes, fontweight="bold", fontsize=10)
+_boldticks(fig); fig.savefig("fig2.png", bbox_inches="tight", dpi=170); fig.savefig("fig2.pdf", bbox_inches="tight")
 print("ENs oof r2", round(r2(T.eVh_B, pr), 3), "P", P.round(3), list(zip(np.round(xs, 2), np.round(ys, 2))))

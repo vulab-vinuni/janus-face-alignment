@@ -3,6 +3,12 @@ from matplotlib.patches import Rectangle
 from glr import r2
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8.0, "axes.linewidth": 1.0, "xtick.direction": "in", "ytick.direction": "in",
     "xtick.top": True, "ytick.right": True, "xtick.minor.visible": True, "ytick.minor.visible": True, "savefig.dpi": 300, "legend.frameon": False, "mathtext.default": "regular"})
+plt.rcParams.update({"font.size": 9.5, "axes.labelsize": 10, "axes.labelweight": "bold", "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 8.5, "mathtext.fontset": "cm", "mathtext.default": "it"})
+def _boldticks(fig):
+    fig.canvas.draw()
+    for _a in fig.axes:
+        for _t in _a.get_xticklabels() + _a.get_yticklabels(): _t.set_fontweight("bold")
+
 C = {"XX": "#2F5DA8", "QX": "#2E9E62", "QQ": "#C0392B"}; LB = {"XX": "XX", "QX": "XQ", "QQ": "QQ"}
 TY = {"I": "#4C72B0", "II": "#DD8452", "III": "#8172B3"}
 LAY = {"X": "#E08E2B", "Q": "#C04A7A"}
@@ -62,5 +68,5 @@ for k_, (c, f) in enumerate(grp):
 ax.axhline(0, c="k", lw=.5, ls=":"); ax.set_xticks(range(1, 5)); ax.set_xticklabels(["XX", "XQ:X", "XQ:Q", "QQ"]); nomx(ax)
 ax.set_ylabel(r"$E_g^{layer}-E_g^{mono}$ (eV)", fontsize=FS + .3)
 for k, a in enumerate([x for x in axs if x is not None]): lab(a, "abcd"[k], -.25)
-fig.savefig("fig3m.pdf", bbox_inches="tight"); fig.savefig("fig/fig3m.png", bbox_inches="tight", dpi=200)
+_boldticks(fig); fig.savefig("fig3m.pdf", bbox_inches="tight"); fig.savefig("fig/fig3m.png", bbox_inches="tight", dpi=200)
 import sys; sys.exit(0)

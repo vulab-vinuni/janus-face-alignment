@@ -3,6 +3,12 @@ from matplotlib.patches import Rectangle
 from glr import r2
 plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 8.0, "axes.linewidth": 1.0, "xtick.direction": "in", "ytick.direction": "in",
     "xtick.top": True, "ytick.right": True, "xtick.minor.visible": True, "ytick.minor.visible": True, "savefig.dpi": 300, "legend.frameon": False, "mathtext.default": "regular"})
+plt.rcParams.update({"font.size": 9.5, "axes.labelsize": 10, "axes.labelweight": "bold", "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 8.5, "mathtext.fontset": "cm", "mathtext.default": "it"})
+def _boldticks(fig):
+    fig.canvas.draw()
+    for _a in fig.axes:
+        for _t in _a.get_xticklabels() + _a.get_yticklabels(): _t.set_fontweight("bold")
+
 C = {"XX": "#2F5DA8", "QX": "#2E9E62", "QQ": "#C0392B"}; LB = {"XX": "XX", "QX": "XQ", "QQ": "QQ"}
 TY = {"I": "#4C72B0", "II": "#DD8452", "III": "#8172B3"}
 LAY = {"X": "#E08E2B", "Q": "#C04A7A"}
@@ -36,7 +42,7 @@ ax.text(.04, .04, "SeAlSnAs", transform=ax.transAxes, ha="left", va="bottom", fo
 ax = axs[2]; cnt = T.groupby(["contact", "type_dft"]).size().unstack(fill_value=0).loc[["XX", "QX", "QQ"]]; bot = np.zeros(3)
 for t in ("I", "II", "III"): ax.bar(range(3), cnt[t], .6, bottom=bot, color=TY[t], edgecolor="k", lw=.5, label=f"type {t}"); bot += cnt[t].values
 for i, v in enumerate(bot): ax.text(i, v + 5, int(v), ha="center", fontsize=6.6)
-ax.set_xticks(range(3)); ax.set_xticklabels(["XX", "XQ", "QQ"]); nomx(ax); ax.set(ylabel="DFT heterostructures", ylim=(0, 330)); ax.legend(loc="upper right", fontsize=6.3, handlelength=1)
+ax.set_xticks(range(3)); ax.set_xticklabels(["XX", "XQ", "QQ"]); nomx(ax); ax.set(ylabel="DFT heterostructures", ylim=(0, 330)); ax.legend(loc="upper right", fontsize=8, handlelength=1)
 # (d) one pair, four faces
 ax = axs[3]; T["pair"] = ["|".join(sorted([a, b])) for a, b in zip(T.L1, T.L2)]
 P = T[T.pair == "SeAlSnAs|TeInSiAs"].copy(); P["lab"] = P.f1 + P.f2; P = P.set_index("lab").loc[["XX", "XQ", "QX", "QQ"]]
@@ -65,16 +71,16 @@ for b_, (c, f) in zip(bp["boxes"], grp): b_.set(facecolor=C[c], alpha=.7, lw=.6)
 ax.axhline(0, c="k", lw=.5, ls=":"); ax.set_xticks(range(1, 5)); ax.set_xticklabels(["XX", "XQ:X", "XQ:Q", "QQ"], fontsize=6.8); nomx(ax)
 ax.set(ylabel=r"$E_g^{layer}-E_g^{mono}$ (eV)")
 for k, a in enumerate(axs): lab(a, "abcdef"[k], -.08 if k == 0 else -.3)
-fig.savefig("fig3m.pdf", bbox_inches="tight"); fig.savefig("fig/fig3m.png", bbox_inches="tight")
+_boldticks(fig); fig.savefig("fig3m.pdf", bbox_inches="tight"); fig.savefig("fig/fig3m.png", bbox_inches="tight")
 # ================= Figure 4: hybridization, ML and validation (2 x 3) =================
 fig, axs = plt.subplots(2, 3, figsize=(7.3, 4.9), gridspec_kw=dict(wspace=.42, hspace=.52)); axs = axs.ravel()
 ax = axs[0]
 for c in ("XX", "QX", "QQ"): ax.hist(D[D.contact == c].w_min, bins=np.linspace(0, 1, 21), color=C[c], alpha=.55, label=LB[c], edgecolor="k", lw=.3)
-ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 52)); ax.legend(loc="upper right", fontsize=6.6)
+ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 52)); ax.legend(loc="upper right", fontsize=8)
 th = np.arange(0, .86, .05); ax = axs[1]
 ax.plot(th, [np.abs(D.vbo_dft - D.vbo_and)[D.w_min >= t].mean() for t in th], "s-", c="#7F7F7F", ms=3, mfc="w", label="Anderson")
 ax.plot(th, [np.abs(D.vbo_dft - D.vbo_glr)[D.w_min >= t].mean() for t in th], "o-", c="k", ms=3, label="S(contact) model")
-ax.set(xlabel=r"$w_{min}$ threshold", ylabel="VBO MAE (eV)", ylim=(0, .4)); ax.legend(loc="lower left", fontsize=6.6)
+ax.set(xlabel=r"$w_{min}$ threshold", ylabel="VBO MAE (eV)", ylim=(0, .4)); ax.legend(loc="lower left", fontsize=8)
 ax = axs[2]; bins = [0, .1, .3, .5, .7, 1.01]; acc, cnt_, lb = [], [], []
 for lo, hi in zip(bins[:-1], bins[1:]):
     s = D[(D.p_local >= lo) & (D.p_local < hi)]; acc.append((s.type_glr == s.type_dft).mean()); cnt_.append(len(s)); lb.append(f"{lo:.1f}–{min(hi, 1):.1f}")
@@ -86,14 +92,14 @@ for c in ("XX", "QX", "QQ"):
     d = T[T.contact == c]; ax.scatter(d.oof_hyb, d.eVh_B, s=4, c=C[c], alpha=.7, lw=0, label=LB[c])
 lim = (-.85, .85); ax.plot(lim, lim, c="k", lw=.6); ax.set(xlim=lim, ylim=lim, xlabel=r"$eV_h$ S(contact) + ML (eV)", ylabel=r"$eV_h$ DFT (eV)")
 ax.text(.04, .96, f"$r^2$ = {r2(T.eVh_B, T.oof_hyb):.2f}\nMAE = {np.abs(T.eVh_B - T.oof_hyb).mean():.3f} eV", transform=ax.transAxes, va="top", fontsize=6.8)
-ax.legend(loc="lower right", fontsize=6.3, markerscale=2, handletextpad=.1)
+ax.legend(loc="lower right", fontsize=8, markerscale=2, handletextpad=.1)
 ax = axs[4]; V = [("5-fold", .757, .937), ("pairs", .770, .930), ("materials", .747, .909), ("shuffled", np.nan, -.196)]; xx = np.arange(4)
 ax.bar(xx - .18, [v[1] for v in V], .34, color="#BFBFBF", edgecolor="k", lw=.5, label="S(contact)"); ax.bar(xx + .18, [v[2] for v in V], .34, color="#5B8BD0", edgecolor="k", lw=.5, label="S(contact) + ML")
 ax.axhline(0, c="k", lw=.5); ax.set_xticks(xx); ax.set_xticklabels([v[0] for v in V], fontsize=6.6, rotation=25); nomx(ax); ax.set(ylim=(-.3, 1.35), ylabel=r"$r^2$ on unseen data", xlabel="validation split")
-ax.legend(loc="upper right", fontsize=6.2)
+ax.legend(loc="upper right", fontsize=8)
 ax = axs[5]; ks = ["anderson", "slr", "glr", "SVM_lin", "SVM_rbf"]; nm = ["Anderson", "global S", "S(contact)", "SVM (lin.)", "SVM (RBF)"]
 ax.bar(range(5), [J[k]["NA"] for k in ks], .62, yerr=[J[k].get("NA_sd", 0) for k in ks], capsize=2, color=["#BFBFBF"] * 3 + ["#5B8BD0"] * 2, edgecolor="k", lw=.5)
 for j, k in enumerate(ks): ax.text(j, J[k]["NA"] + J[k].get("NA_sd", 0) + .02, f"{J[k]['NA']:.2f}", ha="center", fontsize=6.4)
-ax.axhline(.5, c="k", ls=":", lw=.7); ax.set_xticks(range(5)); ax.set_xticklabels(nm, rotation=30, fontsize=6.5); nomx(ax); ax.set(ylim=(0, 1.0), ylabel="balanced accuracy (SBO)")
+ax.axhline(.5, c="k", ls=":", lw=.7); ax.set_xticks(range(5)); ax.set_xticklabels(nm, rotation=30, fontsize=6.5); nomx(ax); ax.set(ylim=(0, 1.0), ylabel="Balanced accuracy")
 for k, a in enumerate(axs): lab(a, "abcdef"[k], -.3)
-fig.savefig("fig45.pdf", bbox_inches="tight"); fig.savefig("fig/fig45.png", bbox_inches="tight")
+_boldticks(fig); fig.savefig("fig45.pdf", bbox_inches="tight"); fig.savefig("fig/fig45.png", bbox_inches="tight")
