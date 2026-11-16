@@ -36,7 +36,7 @@ def _boldticks(fig):
         for _t in _a.get_xticklabels() + _a.get_yticklabels(): _t.set_fontweight("bold")
 
 INK, MUTE, ARR = "k", "k", "#E8A86B"
-EL = {"Se": "#E08E2B", "Al": "#6F9FD8", "Sn": "#4F4F6F", "As": "#C04A7A"}   # trùng màu X/A/M/Q của Hình 2a   # màu kiểu VESTA (Se vàng-lục, As tím)
+EL = {"Se": "#E08E2B", "Al": "#6F9FD8", "Sn": "#4F4F6F", "As": "#C04A7A"}   # same X/A/M/Q colours as Fig. 2a (VESTA-like)
 RAD = {"Se": .55, "Al": .48, "Sn": .62, "As": .55}
 TY = {"I": "#4C72B0", "II": "#DD8452", "III": "#8172B3"}
 fig = plt.figure(figsize=(7.2, 5.4)); W = fig.add_axes([0, 0, 1, 1]); W.set_xlim(0, 100); W.set_ylim(0, 75); W.axis("off")
