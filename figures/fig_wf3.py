@@ -110,7 +110,7 @@ W.text(54, 41.2, "4 contact faces per pair", ha="center", fontsize=8.0, color=IN
 W.add_patch(Rectangle((66.3, 52.5), 6.6, 7.5, fc="#CFDDF0", ec="#2F5DA8", lw=.8))
 for yy in (52.5, 55, 57.5): W.add_patch(Ellipse((69.6, yy), 6.6, 1.7, fc="#CFDDF0", ec="#2F5DA8", lw=.8))
 W.add_patch(Ellipse((69.6, 60), 6.6, 1.7, fc="#A9C3E8", ec="#2F5DA8", lw=.8))
-W.text(69.6, 49.2, "7 796 interfaces\n832 DFT", ha="center", fontsize=7.8, color=INK)
+W.text(69.6, 50.6, "7 796 interfaces\n832 DFT", ha="center", va="top", fontsize=7.8, color=INK)
 # ---------- (a5) DFT potential: Origin frame
 a4 = fig.add_axes([0.805, 0.64, 0.165, 0.245]); z = np.linspace(0, 45, 600)
 V = 4.4 + .6 * np.tanh((z - 22.5) / .6) - 7 * (np.exp(-((z - 17) / 1.4) ** 2) + np.exp(-((z - 28) / 1.4) ** 2)) - 3.5 * (np.exp(-((z - 19.5) / .9) ** 2) + np.exp(-((z - 25.5) / .9) ** 2))

@@ -98,7 +98,7 @@ ax.set(ylabel=r"$E_g^{layer}-E_g^{mono}$ (eV)")
 for k, a in enumerate(axs): lab(a, "abcdef"[k], -.08 if k == 0 else -.3)
 _boldticks(fig); fig.savefig("fig3m.pdf", bbox_inches="tight"); fig.savefig("fig/fig3m.png", bbox_inches="tight")
 # ================= Figure 4: hybridization, ML and validation (2 x 3) =================
-fig, axs = plt.subplots(2, 3, figsize=(7.3, 5.6), gridspec_kw=dict(wspace=.42, hspace=.62)); axs = axs.ravel()
+fig, axs = plt.subplots(3, 3, figsize=(7.3, 8.3), gridspec_kw=dict(wspace=.42, hspace=.72)); axs = axs.ravel()
 ax = axs[0]
 for c in ("XX", "QX", "QQ"): ax.hist(D[D.contact == c].w_min, bins=np.linspace(0, 1, 21), color=C[c], alpha=.55, label=LB[c], edgecolor="k", lw=.3)
 ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 60)); ax.legend(loc="upper right", fontsize=8.0)
@@ -132,5 +132,22 @@ ax.bar(range(5), [J[k]["NA"] for k in ks], .62, yerr=[J[k].get("NA_sd", 0) for k
 for j, k in enumerate(ks): ax.text(j, J[k]["NA"] + J[k].get("NA_sd", 0) + .02, f"{J[k]['NA']:.2f}", ha="center", fontsize=8)
 ax.axhline(.5, c="k", ls=":", lw=.7); ax.set_xticks(range(5)); ax.set_xticklabels(nm, rotation=30, fontsize=8); nomx(ax); ax.set(ylim=(0, 1.32), ylabel="Balanced accuracy"); ax.set_yticks(np.arange(0, 1.01, .2))
 from matplotlib.patches import Patch; ax.legend([Patch(fc="#A9D3C4", ec="k", lw=.5), Patch(fc="#2A8C6E", ec="k", lw=.5)], ["physical model", "SVM classifier"], loc="upper left", fontsize=8.0, ncol=1, handlelength=1.2, columnspacing=.8, borderaxespad=.25)
-for k, a in enumerate(axs): lab(a, "abcdef"[k], -.3)
+# ---- row 3: confidence-resolved alignment map of the lattice-matched interfaces (former Fig. 6)
+TTY = {"I": "#7E3BA8", "II": "#F08C1E", "III": "#1FB0CC"}            # same type colours as Fig. 2
+A = pd.read_csv("pred7796_hyb.csv"); A = A[(A.Eg1 > .05) & (A.Eg2 > .05)]
+ax = axs[6]; Al = A[A.p_local >= .3]; Ah = A[A.p_local < .3]
+ax.scatter(Ah.dE.abs(), Ah.Eg1 + Ah.Eg2, s=1.5, c="#D0D0D0", lw=0, label="hybridized")
+for t in ("I", "II", "III"):
+    d = Al[Al.type_hyb == t]; ax.scatter(d.dE.abs(), d.Eg1 + d.Eg2, s=3, c=TTY[t], lw=0, label=f"type {t}")
+ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$E_{g,1}+E_{g,2}$ (eV)", xlim=(0, 2.5), ylim=(0, 7.4)); ax.set_yticks(range(0, 6))
+ax.legend(loc="upper left", fontsize=7.5, markerscale=3, handletextpad=0, ncol=2, columnspacing=.3, borderaxespad=.15, handlelength=1.2)
+ax = axs[7]; fr = A.groupby("contact").type_hyb.value_counts(normalize=True).unstack().loc[["XX", "QX", "QQ"]]; bot = np.zeros(3)
+for t in ("I", "II", "III"): ax.bar(range(3), fr[t], .62, bottom=bot, color=TTY[t], edgecolor="k", lw=.5); bot += fr[t].values
+ax.set_xticks(range(3)); ax.set_xticklabels(["XX", "XQ", "QQ"]); nomx(ax); ax.set(ylim=(0, 1), ylabel="type fraction")
+ax = axs[8]; A["pair"] = ["|".join(sorted([a, b])) for a, b in zip(A.L1, A.L2)]; nt = A.groupby("pair").type_hyb.nunique()
+vals = [(nt == k).sum() for k in (1, 2, 3)]
+ax.bar(range(3), vals, .62, color=["#D5D5D5", "#9A9A9A", "#4D4D4D"], edgecolor="k", lw=.5)
+for j, v in enumerate(vals): ax.text(j, v + 15, v, ha="center", fontsize=8)
+ax.set_xticks(range(3)); ax.set_xticklabels(["1", "2", "3"]); nomx(ax); ax.set(xlabel="distinct types over faces", ylabel="material pairs", ylim=(0, max(vals) * 1.18))
+for k, a in enumerate(axs): lab(a, "abcdefghi"[k], -.3)
 _boldticks(fig); fig.savefig("fig45.pdf", bbox_inches="tight"); fig.savefig("fig/fig45.png", bbox_inches="tight")
