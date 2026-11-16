@@ -17,7 +17,7 @@ for tr, te in GroupKFold(5).split(T, groups=g):
 T["oof_en"] = pr; P = least_squares(lambda p: mdl(p, z.values, T.dE.values) - T.eVh_B.values, [-1, 0]).x
 fig, A = plt.subplots(2, 3, figsize=(7.3, 4.75), gridspec_kw=dict(wspace=.42, hspace=.42)); A = A.ravel()
 full = fit(T, "eVh_B", "glr", "contact")
-# (a) raw DFT data: eV_h vs |ΔE_m|, slope = 1 − S
+# (a) dữ liệu DFT thô: eV_h theo |ΔE_m|, độ dốc = 1 − S
 x = T.dE.abs(); y = T.eVh_B * np.sign(T.dE); h = x - (T.Eg1 + T.Eg2) / 2; ax = A[0]; xx = np.linspace(0, x.max(), 10)
 for c in ("XX", "QX", "QQ"):
     m = T.contact == c; ax.scatter(x[m], y[m], s=5, c=C[c], alpha=.6, lw=0, label=f"{LB[c]} (S = {full['S'][c]:.2f})"); ax.plot(xx, (1 - full["S"][c]) * xx, c=C[c], lw=1.3)
@@ -30,7 +30,7 @@ for c in ("XX", "QX", "QQ"):
 ax.axvline(0, c="k", lw=.7, ls="--"); ax.text(.04, .96, "no kink at the\nspillage onset", transform=ax.transAxes, va="top", fontsize=6.8)
 ax.set(xlabel=r"$|\Delta E_m|-E_g^\mathrm{sum}/2$ (eV)", ylim=(-.3, .75))
 axs = A[2:]
-for k, (col_, t) in enumerate((("oof_slr", "sLR, global S"), ("oof_glrc", "S by contact type"))):
+for k, (col_, t) in enumerate((("oof_slr", "global S"), ("oof_glrc", "S by contact type"))):
     ax = axs[k]
     for c in ("XX", "QX", "QQ"):
         d = T[T.contact == c]; ax.scatter(d[col_], d.eVh_B, s=5, c=C[c], alpha=.7, lw=0, label=LB[c])

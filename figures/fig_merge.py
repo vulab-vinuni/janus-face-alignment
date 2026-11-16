@@ -73,7 +73,7 @@ for c in ("XX", "QX", "QQ"): ax.hist(D[D.contact == c].w_min, bins=np.linspace(0
 ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 52)); ax.legend(loc="upper right", fontsize=6.6)
 th = np.arange(0, .86, .05); ax = axs[1]
 ax.plot(th, [np.abs(D.vbo_dft - D.vbo_and)[D.w_min >= t].mean() for t in th], "s-", c="#7F7F7F", ms=3, mfc="w", label="Anderson")
-ax.plot(th, [np.abs(D.vbo_dft - D.vbo_glr)[D.w_min >= t].mean() for t in th], "o-", c="k", ms=3, label="gLR, S(contact)")
+ax.plot(th, [np.abs(D.vbo_dft - D.vbo_glr)[D.w_min >= t].mean() for t in th], "o-", c="k", ms=3, label="S(contact) model")
 ax.set(xlabel=r"$w_{min}$ threshold", ylabel="VBO MAE (eV)", ylim=(0, .4)); ax.legend(loc="lower left", fontsize=6.6)
 ax = axs[2]; bins = [0, .1, .3, .5, .7, 1.01]; acc, cnt_, lb = [], [], []
 for lo, hi in zip(bins[:-1], bins[1:]):
@@ -84,16 +84,16 @@ ax.set_xticks(range(5)); ax.set_xticklabels(lb, rotation=35, fontsize=6.5); nomx
 ax = axs[3]
 for c in ("XX", "QX", "QQ"):
     d = T[T.contact == c]; ax.scatter(d.oof_hyb, d.eVh_B, s=4, c=C[c], alpha=.7, lw=0, label=LB[c])
-lim = (-.85, .85); ax.plot(lim, lim, c="k", lw=.6); ax.set(xlim=lim, ylim=lim, xlabel=r"$eV_h$ gLR + ML (eV)", ylabel=r"$eV_h$ DFT (eV)")
+lim = (-.85, .85); ax.plot(lim, lim, c="k", lw=.6); ax.set(xlim=lim, ylim=lim, xlabel=r"$eV_h$ S(contact) + ML (eV)", ylabel=r"$eV_h$ DFT (eV)")
 ax.text(.04, .96, f"$r^2$ = {r2(T.eVh_B, T.oof_hyb):.2f}\nMAE = {np.abs(T.eVh_B - T.oof_hyb).mean():.3f} eV", transform=ax.transAxes, va="top", fontsize=6.8)
 ax.legend(loc="lower right", fontsize=6.3, markerscale=2, handletextpad=.1)
 ax = axs[4]; V = [("5-fold", .757, .937), ("pairs", .770, .930), ("materials", .747, .909), ("shuffled", np.nan, -.196)]; xx = np.arange(4)
-ax.bar(xx - .18, [v[1] for v in V], .34, color="#BFBFBF", edgecolor="k", lw=.5, label="gLR, S(contact)"); ax.bar(xx + .18, [v[2] for v in V], .34, color="#5B8BD0", edgecolor="k", lw=.5, label="gLR + ML")
+ax.bar(xx - .18, [v[1] for v in V], .34, color="#BFBFBF", edgecolor="k", lw=.5, label="S(contact)"); ax.bar(xx + .18, [v[2] for v in V], .34, color="#5B8BD0", edgecolor="k", lw=.5, label="S(contact) + ML")
 ax.axhline(0, c="k", lw=.5); ax.set_xticks(xx); ax.set_xticklabels([v[0] for v in V], fontsize=6.6, rotation=25); nomx(ax); ax.set(ylim=(-.3, 1.35), ylabel=r"$r^2$ on unseen data", xlabel="validation split")
 ax.legend(loc="upper right", fontsize=6.2)
-ax = axs[5]; ks = ["anderson", "slr", "glr", "SVM_lin", "SVM_rbf"]; nm = ["Anderson", "sLR", "gLR", "SVM-lin", "SVM-RBF"]
+ax = axs[5]; ks = ["anderson", "slr", "glr", "SVM_lin", "SVM_rbf"]; nm = ["Anderson", "global S", "S(contact)", "SVM (lin.)", "SVM (RBF)"]
 ax.bar(range(5), [J[k]["NA"] for k in ks], .62, yerr=[J[k].get("NA_sd", 0) for k in ks], capsize=2, color=["#BFBFBF"] * 3 + ["#5B8BD0"] * 2, edgecolor="k", lw=.5)
 for j, k in enumerate(ks): ax.text(j, J[k]["NA"] + J[k].get("NA_sd", 0) + .02, f"{J[k]['NA']:.2f}", ha="center", fontsize=6.4)
-ax.axhline(.5, c="k", ls=":", lw=.7); ax.set_xticks(range(5)); ax.set_xticklabels(nm, rotation=30, fontsize=6.5); nomx(ax); ax.set(ylim=(0, 1.0), ylabel="normalized accuracy (SBO)")
+ax.axhline(.5, c="k", ls=":", lw=.7); ax.set_xticks(range(5)); ax.set_xticklabels(nm, rotation=30, fontsize=6.5); nomx(ax); ax.set(ylim=(0, 1.0), ylabel="balanced accuracy (SBO)")
 for k, a in enumerate(axs): lab(a, "abcdef"[k], -.3)
 fig.savefig("fig45.pdf", bbox_inches="tight"); fig.savefig("fig/fig45.png", bbox_inches="tight")
