@@ -162,8 +162,8 @@ W.add_patch(FancyBboxPatch((x0, y0), w, h, boxstyle="round,pad=0,rounding_size=1
 W.add_patch(FancyBboxPatch((x0, y0 + h - 3.4), w, 3.4, boxstyle="round,pad=0,rounding_size=1.0", fc="#8E44AD", ec="#8E44AD", lw=.9, zorder=4))
 W.add_patch(Rectangle((x0, y0 + h - 3.4), w, 1.2, fc="#8E44AD", ec="none", zorder=4))
 W.text(x0 + w / 2, y0 + h - 1.7, "VALIDATION", ha="center", va="center", color="white", fontsize=8.2, fontweight="bold", zorder=5)
-W.text(x0 + 1.0, y0 + h - 5.4, "test", fontsize=7.5, color=MUTE, zorder=5); W.text(x0 + w - 1.0, y0 + h - 5.4, "r² / MAE", fontsize=7.5, color=MUTE, ha="right", zorder=5)
-rows = [("5-fold CV (pair)", "0.94"), ("pair hold-out", "0.93"), ("material hold-out", "0.91"), ("shuffled labels", "−0.20"), ("blind (59), MAE", "0.048"), ("blind SBO (BA)", "0.87")]
+W.text(x0 + 1.0, y0 + h - 5.4, "test", fontsize=7.5, color=MUTE, zorder=5); W.text(x0 + w - 1.0, y0 + h - 5.4, "metric", fontsize=7.5, color=MUTE, ha="right", zorder=5)
+rows = [("5-fold CV (pair)", "0.94"), ("pair hold-out", "0.93"), ("material hold-out", "0.91"), ("shuffled labels", "−0.20"), ("blind (59), MAE", "0.048"), ("blind (59), AUC", "0.88")]
 for k, (a, b) in enumerate(rows):
     yy = y0 + h - 8.2 - k * 2.9
     if k % 2 == 0: W.add_patch(Rectangle((x0 + .3, yy - 1.3), w - .6, 2.6, fc="#F4EEF9", ec="none", zorder=4))
