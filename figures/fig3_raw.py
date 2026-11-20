@@ -58,7 +58,7 @@ ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$eV_h\,\mathrm{sgn}(\Delta E_m)$ 
 ax = A[1]
 for c in ("XX", "QX", "QQ"):
     m = T.contact == c; ax.scatter(h[m], y[m], s=5, c=C[c], alpha=.6, lw=0)
-ax.axvline(0, c="k", lw=.7, ls="--"); ax.text(.04, .96, "no kink at the\nspillage onset", transform=ax.transAxes, va="top", fontsize=8)
+ax.axvline(0, c="k", lw=.7, ls="--"); ax.text(.04, .96, "no kink at\nbare threshold", transform=ax.transAxes, va="top", fontsize=8)
 ax.set(xlabel=r"$|\Delta E_m|-E_g^\mathrm{sum}/2$ (eV)", ylim=(-.3, .75))
 axs = A[2:]
 for k, (col_, t) in enumerate((("oof_slr", "global S"), ("oof_glrc", "S by contact type"))):
