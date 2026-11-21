@@ -80,3 +80,23 @@ ok = D.type_dft == D.type_glr; okb = B.type_dft == B.type_glr; lb = B.regime == 
 for t in (0, .05, .1, .15, .2):
     s = loc & (pm > t); sb = lb & (B.margin > t)
     print("margin > %.2f eV: CV coverage %.1f%% acc %.2f | blind %d/%d correct" % (t, 100 * s.mean(), ok[s].mean(), okb[sb].sum(), sb.sum()))
+
+# Note 2 (continued): controlled comparison Te-Te (XX) vs Sb-containing QQ contacts
+import re
+at = lambda n, f: re.findall(r"[A-Z][a-z]?", n)[0 if f == "X" else 3]
+D["atoms"] = ["-".join(sorted([at(a, f), at(b, g)])) for a, f, b, g in zip(D.L1, D.f1, D.L2, D.f2)]
+rng = np.random.default_rng(0)
+for atoms, c in [("Te-Te", "XX"), ("As-Sb", "QQ"), ("P-Sb", "QQ"), ("S-S", "XX")]:
+    G = D[(D.atoms == atoms) & (D.contact == c)]; pp = G.pair.unique()
+    Sfun = lambda H: 1 - (H.dE * H.eVh_B).sum() / (H.dE ** 2).sum()
+    bs = [Sfun(pd.concat([G[G.pair == p] for p in rng.choice(pp, len(pp))])) for _ in range(1000)]
+    print(f"{c} {atoms}: N={len(G)} S={Sfun(G):.2f} CI {np.percentile(bs, 2.5):.2f}-{np.percentile(bs, 97.5):.2f}")
+
+# Note 2 (continued): screening refitted with SOC-corrected midgap levels, bracketing the VBM/CBM split
+soc = pd.read_csv("data/monolayers/soc_gap_reduction.csv").set_index("name").dEg_SOC_eV
+d1, d2 = D.L1.map(soc), D.L2.map(soc)
+for f_vbm in (0.0, 0.5, 1.0):  # fraction of the (negative) gap change taken by the VBM
+    G = G0.copy(); G["dE"] = G.dE + (1 - 2 * f_vbm) * (d2 - d1).values / 2; G["Eg1"] = G.Eg1 + d1.values; G["Eg2"] = G.Eg2 + d2.values
+    G = G[(G.Eg1 > .05) & (G.Eg2 > .05)]
+    o = fit(G, target="eVh_B", model="glr", groups="contact")
+    print("SOC, VBM share %.1f:" % f_vbm, len(G), {k: round(v, 3) for k, v in o["S"].items()}, "r2 %.3f" % o["r2"])

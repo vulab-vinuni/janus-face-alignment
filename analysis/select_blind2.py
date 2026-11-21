@@ -15,16 +15,16 @@ Pre-registered criteria (fixed before any DFT calculation of these interfaces)
   Controls are diagnostic: their accuracy is reported but has no pass criterion.
 """
 import numpy as np, pandas as pd, hashlib, json, os, sys
-B1 = "../blind"; EX = "../expand"
+B1 = "data/blind_test"; EX = "data/selection"   # lists of the interfaces already computed (pilot, expansion batches)
 rng = np.random.default_rng(20261121)
-A = pd.read_csv("../ms/pred7796_hyb.csv").drop(columns=["margin", "conf", "pair"], errors="ignore")  # frozen round-1 predictions incl. ML dipole (identical to round-1 frozen values)
+A = pd.read_csv("data/predictions/alignment_map7796.csv").drop(columns=["margin", "conf", "pair"], errors="ignore")  # frozen round-1 predictions incl. ML dipole (identical to round-1 frozen values)
 pr = lambda a, b: "|".join(sorted([a, b]))
 A["pair"] = [pr(a, b) for a, b in zip(A.L1, A.L2)]
 seen = pd.concat([pd.read_csv(f) for f in (f"{EX}/pilot_list.csv", f"{EX}/expand_list.csv", f"{EX}/expand_list_b2.csv",
                                             f"{B1}/blind60_predictions_FROZEN.csv")], ignore_index=True)
 seen_id = set(seen.id); seen_pair = {pr(a, b) for a, b in zip(seen.L1, seen.L2)}
 # also exclude anything in the released 832 set
-H = pd.read_csv("/home/claude/janus-face-alignment/data/heterostructures/het832_dft.csv")
+H = pd.read_csv("data/heterostructures/het832_dft.csv")
 seen_pair |= {pr(a, b) for a, b in zip(H.L1, H.L2)}
 A = A[(A.Eg1 > .05) & (A.Eg2 > .05) & ~A.id.isin(seen_id) & ~A.pair.isin(seen_pair)].copy()
 v1, c1 = -A.Eg1 / 2, A.Eg1 / 2; v2, c2 = A.dE - A.eVh_glr - A.Eg2 / 2, A.dE - A.eVh_glr + A.Eg2 / 2
