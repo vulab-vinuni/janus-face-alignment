@@ -1,3 +1,6 @@
+"""Collects the distance-scan results from the raw QE post-processing output (a1/qe/*/post/bilayer.json on the cluster)
+into data/distance_scan/distance_scan_results.csv. The raw files are not part of the repository; the resulting CSV is.
+Inputs are built with mk_a1.py / mk_a1b.py and run with task_a1.sh; the figure is made by fig_a1.py."""
 import json, os, numpy as np, pandas as pd
 D=pd.read_csv("data/heterostructures/het599_training_set.csv").set_index("id")
 lab={"H20992":"Te-Te (XX)","H21356":"Te-Te' (XX)","H03396":"S-S (XX)","H03523":"P-Sb (QQ)","H15111":"As-Sb (QQ)","H14018":"P-Se (QX)","H21905":"P-Te (QX)"}
