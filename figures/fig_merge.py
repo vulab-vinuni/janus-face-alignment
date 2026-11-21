@@ -98,7 +98,11 @@ ax.set(ylabel=r"$E_g^{layer}-E_g^{mono}$ (eV)")
 for k, a in enumerate(axs): lab(a, "abcdef"[k], -.08 if k == 0 else -.3)
 _boldticks(fig); fig.savefig("fig3m.pdf", bbox_inches="tight"); fig.savefig("fig/fig3m.png", bbox_inches="tight")
 # ================= Figure 4: hybridization, ML and validation (2 x 3) =================
-fig, axs = plt.subplots(3, 3, figsize=(7.3, 8.3), gridspec_kw=dict(wspace=.42, hspace=.72)); axs = axs.ravel()
+figM = plt.figure(figsize=(7.3, 6.0)); gM = figM.add_gridspec(2, 2, wspace=.30, hspace=.42)
+figS = plt.figure(figsize=(7.3, 5.4)); gS = figS.add_gridspec(2, 3, wspace=.42, hspace=.75)
+axs = [figM.add_subplot(gM[0, 0]), figS.add_subplot(gS[0, 0]), figM.add_subplot(gM[0, 1]), figS.add_subplot(gS[0, 1]), figS.add_subplot(gS[0, 2]),
+       figS.add_subplot(gS[1, 0]), figM.add_subplot(gM[1, 0]), figM.add_subplot(gM[1, 1]), figS.add_subplot(gS[1, 1])]
+fig = figM
 ax = axs[0]
 for c in ("XX", "QX", "QQ"): ax.hist(D[D.contact == c].w_min, bins=np.linspace(0, 1, 21), color=C[c], alpha=.55, label=LB[c], edgecolor="k", lw=.3)
 ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 60)); ax.legend(loc="upper right", fontsize=8.0)
@@ -162,5 +166,7 @@ ax.bar(np.arange(3) + .2, valc, .38, color="#4D4D4D", edgecolor="k", lw=.5, labe
 for j, (v, u) in enumerate(zip(vals, valc)): ax.text(j - .2, v + 15, v, ha="center", fontsize=7); ax.text(j + .2, u + 15, u, ha="center", fontsize=7)
 ax.set_xticks(range(3)); ax.set_xticklabels(["1", "2", "3"]); nomx(ax); ax.set(xlabel="distinct types over faces", ylabel="material pairs", ylim=(0, max(vals) * 1.45))
 ax.legend(loc="upper right", fontsize=7, handlelength=1.2, borderaxespad=.2)
-for k, a in enumerate(axs): lab(a, "abcdefghi"[k], -.3)
-_boldticks(fig); fig.savefig("fig45.pdf", bbox_inches="tight"); fig.savefig("fig/fig45.png", bbox_inches="tight")
+for k, l_ in zip([0, 2, 6, 7], "abcd"): lab(axs[k], l_, -.2)
+for k, l_ in zip([1, 3, 4, 5, 8], "abcde"): lab(axs[k], l_, -.3)
+_boldticks(figM); figM.savefig("fig45.pdf", bbox_inches="tight"); figM.savefig("fig/fig45.png", bbox_inches="tight")
+_boldticks(figS); figS.savefig("figS_ml_extra.pdf", bbox_inches="tight")

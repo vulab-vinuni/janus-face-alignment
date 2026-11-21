@@ -87,8 +87,9 @@ from glr import r2
 CC = {"XX": "#1F4E9C", "QX": "#14946A", "QQ": "#C0392B"}
 def nomx(ax): ax.tick_params(axis="x", which="minor", bottom=False, top=False)
 FS = 9
-gb = fig.add_gridspec(1, 3, left=.08, right=.99, top=.255, bottom=.05, wspace=.45)
-AX = [fig.add_subplot(gb[0, j]) for j in range(3)]
+gb = fig.add_gridspec(1, 3, left=.08, right=.99, top=.255, bottom=.05, wspace=.45, width_ratios=[1, 1.4, 1])
+figS = plt.figure(figsize=(5.2, 2.4)); gSb = figS.add_gridspec(1, 2, wspace=.45)
+AX = [figS.add_subplot(gSb[0, 0]), fig.add_axes([.36, .05, .40, .205]), figS.add_subplot(gSb[0, 1])]
 for a_ in AX: a_.tick_params(labelsize=FS, direction="in", top=True, right=True); a_.minorticks_on()
 # (c) bộ dữ liệu
 ax = AX[0]; cnt = T.groupby(["contact", "type_dft"]).size().unstack(fill_value=0).loc[["XX", "QX", "QQ"]]; bot = np.zeros(3)
@@ -119,5 +120,7 @@ ax.axhline(0, c="k", lw=.5, ls=":"); ax.set_xticks(range(1, 5)); ax.set_xticklab
 ax.set_ylabel(r"$E_g^{layer}-E_g^{mono}$ (eV)", fontsize=10, fontweight="bold")
 
 fig.text(.005, .975, "a", fontweight="bold", fontsize=12)
-for k, a in enumerate(AX): a.text(-.33, 1.06, "bcd"[k], transform=a.transAxes, fontweight="bold", fontsize=12)
+AX[1].text(-.19, 1.06, "b", transform=AX[1].transAxes, fontweight="bold", fontsize=12)
+for a, l_ in zip([AX[0], AX[2]], "ab"): a.text(-.33, 1.06, l_, transform=a.transAxes, fontweight="bold", fontsize=12)
 _boldticks(fig); fig.savefig("fig2_merged.pdf", bbox_inches="tight"); fig.savefig("fig/fig2_merged.png", bbox_inches="tight", dpi=200)
+_boldticks(figS); figS.savefig("figS_dataset_gap.pdf", bbox_inches="tight")

@@ -46,15 +46,19 @@ pr = np.zeros(len(T))
 for tr, te in GroupKFold(5).split(T, groups=g):
     o = least_squares(lambda p: mdl(p, z.values[tr], T.dE.values[tr]) - T.eVh_B.values[tr], [-1, 0]); pr[te] = mdl(o.x, z.values[te], T.dE.values[te])
 T["oof_en"] = pr; P = least_squares(lambda p: mdl(p, z.values, T.dE.values) - T.eVh_B.values, [-1, 0]).x
-fig, A = plt.subplots(2, 3, figsize=(7.3, 4.75), gridspec_kw=dict(wspace=.42, hspace=.42)); A = A.ravel()
+figM = plt.figure(figsize=(7.3, 5.6)); gM = figM.add_gridspec(2, 2, wspace=.30, hspace=.38)
+figS = plt.figure(figsize=(7.3, 2.45)); gS = figS.add_gridspec(1, 3, wspace=.42)
+A = np.array([figM.add_subplot(gM[0, 0]), figS.add_subplot(gS[0, 0]), figS.add_subplot(gS[0, 1]), figS.add_subplot(gS[0, 2]),
+              figM.add_subplot(gM[0, 1]), figM.add_subplot(gM[1, 0])], dtype=object)
+AXD = figM.add_subplot(gM[1, 1]); fig = figM
 full = fit(T, "eVh_B", "glr", "contact")
-# (a) raw DFT data: eV_h vs |ΔE_m|, slope = 1 − S
+# (a) dữ liệu DFT thô: eV_h theo |ΔE_m|, độ dốc = 1 − S
 x = T.dE.abs(); y = T.eVh_B * np.sign(T.dE); h = x - (T.Eg1 + T.Eg2) / 2; ax = A[0]; xx = np.linspace(0, x.max(), 10)
 for c in ("XX", "QX", "QQ"):
     m = T.contact == c; ax.scatter(x[m], y[m], s=5, c=C[c], alpha=.6, lw=0, label=f"{LB[c]} (S = {full['S'][c]:.2f})"); ax.plot(xx, (1 - full["S"][c]) * xx, c=C[c], lw=1.3)
 ax.plot(xx, xx, "k:", lw=.7); ax.text(1.66, 1.08, "S = 0", fontsize=8.0, ha="right", va="top", rotation=0)
 ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$eV_h\,\mathrm{sgn}(\Delta E_m)$ DFT (eV)", ylim=(-.3, 1.7)); ax.legend(loc="upper left", fontsize=8.0, markerscale=2, handletextpad=.1, borderaxespad=.2)
-# (b) test of the charge-spillage threshold
+# (b) kiểm tra ngưỡng tràn điện tích của gLR
 ax = A[1]
 for c in ("XX", "QX", "QQ"):
     m = T.contact == c; ax.scatter(h[m], y[m], s=5, c=C[c], alpha=.6, lw=0)
@@ -100,6 +104,19 @@ print("TeTe", round(_x,2), round(_y,3), "QQ-Sb", [(round(v[0],2), round(v[1],3))
 
 for c, xr in (("QQ", 4.36), ("QX", 4.73), ("XX", 5.10)): ax.axvline(xr, c=C[c], lw=.6, ls=":"); ax.text(xr, .965, LB[c], color=C[c], fontsize=8, ha="center", va="top")
 ax.set(xlabel=r"$\chi_1+\chi_2$ of contact atoms", ylabel="S", ylim=(.3, 1.0)); ax.legend(loc="lower right", fontsize=7.0, bbox_to_anchor=(1.03, -0.02), handlelength=1.0, labelspacing=.25)
-for k, a_ in enumerate(A): a_.text(-.32, 1.07, "abcdef"[k], transform=a_.transAxes, fontweight="bold", fontsize=10)
-_boldticks(fig); fig.savefig("fig2.png", bbox_inches="tight", dpi=170); fig.savefig("fig2.pdf", bbox_inches="tight")
-print("ENs oof r2", round(r2(T.eVh_B, pr), 3), "P", P.round(3), list(zip(np.round(xs, 2), np.round(ys, 2))))
+# (d, main) rigid interlayer-distance scan at fixed chemistry (Supplementary Note 5)
+ax = AXD; Fd = pd.read_csv("../a1/res/a1_final.csv"); Dh = T.set_index("id") if "id" in T else None
+sty = [("H20992", "Te–Te (XX)", C["XX"], "o"), ("H21905", "P–Te (XQ)", C["QX"], "^"), ("H03523", "P–Sb (QQ)", C["QQ"], "s"), ("H15111", "As–Sb (QQ)", C["QQ"], "D")]
+for hid, nm, col, mk in sty:
+    gq = Fd[Fd.id == hid].sort_values("d"); ok = gq.Eg_bi > .05
+    ax.plot(gq.d, gq.S, "-", c=col, lw=1.1, alpha=.85)
+    ax.plot(gq.d[ok], gq.S[ok], mk, c=col, mec="k", mew=.4, ms=4.5, label=nm)
+    ax.plot(gq.d[~ok], gq.S[~ok], mk, mfc="w", mec=col, mew=1, ms=4.5)
+    e = gq[gq.delta == 0]; ax.plot(e.d, e.S, mk, mfc="none", mec="k", mew=1.1, ms=9)
+ax.axvspan(2.2, 2.6, color=C["QQ"], alpha=.08, lw=0); ax.text(2.4, .985, "QQ\nequil.", ha="center", va="top", fontsize=7.5, color=C["QQ"])
+ax.set(xlabel=r"interlayer separation $d$ (Å)", ylabel="S", xlim=(1.5, 4.8), ylim=(.25, 1.02))
+ax.legend(loc="lower right", fontsize=7.0, handletextpad=.2, labelspacing=.25, borderaxespad=.2)
+for a_, l_ in zip([A[0], A[4], A[5], AXD], "abcd"): a_.text(-.20, 1.05, l_, transform=a_.transAxes, fontweight="bold", fontsize=10)
+for a_, l_ in zip([A[1], A[2], A[3]], "abc"): a_.text(-.32, 1.07, l_, transform=a_.transAxes, fontweight="bold", fontsize=10)
+_boldticks(figM); figM.savefig("fig2.png", bbox_inches="tight", dpi=170); figM.savefig("fig2.pdf", bbox_inches="tight")
+_boldticks(figS); figS.savefig("figS_screening_extra.pdf", bbox_inches="tight")
