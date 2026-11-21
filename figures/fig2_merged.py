@@ -4,7 +4,7 @@ from matplotlib.patches import Rectangle, FancyBboxPatch
 from matplotlib.colors import to_rgb
 plt.rcParams.update({"font.family":"DejaVu Sans","font.size":10,"axes.linewidth":1,"xtick.direction":"in","ytick.direction":"in","ytick.right":True,"mathtext.fontset":"cm"})
 tint = lambda c, f: tuple(np.array(to_rgb(c)) + (1 - np.array(to_rgb(c))) * f)
-ROW = {"X": "#E08E2B", "A": "#6F9FD8", "M": "#4F4F6F", "Q": "#C04A7A"}
+ROW = {"X": "#E3C02A", "A": "#6F9FD8", "M": "#4F4F6F", "Q": "#C04A7A"}
 CC = {"XX": "#1F4E9C", "XQ": "#14946A", "QX": "#14946A", "QQ": "#C0392B"}
 TT = {"I": "#7E3BA8", "II": "#F08C1E", "III": "#1FB0CC"}; TN = {"I": "straddling", "II": "staggered", "III": "broken gap"}
 L1C, L2C = "#2B5BA8", "#D9661F"
@@ -13,14 +13,14 @@ P = T[T.pair == "SeAlSnAs|TeGaGeP"].copy(); P["lab"] = P.f1 + P.f2; P = P.set_in
 fig = plt.figure(figsize=(7.3, 7.7))
 gs = fig.add_gridspec(2, 4, height_ratios=[.9, 2.5], hspace=.08, wspace=.12, left=.08, right=.99, top=.965, bottom=.455)
 for i, (lb, r) in enumerate(P.iterrows()):
-    # --- bilayer sketch: layer 1 (SeAlSnAs) at the bottom, layer 2 (TeInSiAs) on top; contact faces in the middle
+    # --- sơ đồ hai lớp: lớp 1 (SeAlSnAs) ở dưới, lớp 2 (TeInSiAs) ở trên; mặt tiếp xúc ở giữa
     a = fig.add_subplot(gs[0, i]); a.axis("off"); a.set_xlim(0, 1); a.set_ylim(-.05, 2.55)
     def stack(y0, contact_face, flip):
-        seq = ["X", "A", "M", "Q"]                       # bottom to top when the X face is at the bottom
+        seq = ["X", "A", "M", "Q"]                       # từ dưới lên khi mặt X ở dưới
         if contact_face == "X": seq = seq[::-1] if not flip else seq
         else: seq = seq if not flip else seq[::-1]
         return [(y0 + k * .27, e) for k, e in enumerate(seq)]
-    # bottom layer: contact face on top; top layer: contact face at the bottom
+    # lớp dưới: mặt tiếp xúc ở trên cùng; lớp trên: mặt tiếp xúc ở dưới cùng
     low = ["X", "A", "M", "Q"] if r.f1 == "Q" else ["Q", "M", "A", "X"]
     up = ["X", "A", "M", "Q"] if r.f2 == "X" else ["Q", "M", "A", "X"]
     for k, e in enumerate(low): a.add_patch(Rectangle((.18, .05 + k * .26), .64, .21, fc=ROW[e], ec="none"))
@@ -28,7 +28,7 @@ for i, (lb, r) in enumerate(P.iterrows()):
     a.add_patch(Rectangle((.13, 1.0), .74, .4, fc="none", ec="0.35", lw=.8, ls=":"))
     a.add_patch(Rectangle((.06, .02), .05, 1.02, fc=L1C, ec="none")); a.add_patch(Rectangle((.06, 1.32), .05, 1.04, fc=L2C, ec="none"))
     a.text(.5, 2.52, lb, ha="center", va="bottom", fontsize=12, fontweight="bold", color=CC[lb])
-    # --- layer-resolved band-edge diagram
+    # --- giản đồ cạnh vùng theo lớp
     ax = fig.add_subplot(gs[1, i])
     for L, x0, col in ((1, .2, L1C), (2, .58, L2C)):
         v, c = r[f"VBM{L}"], r[f"CBM{L}"]
@@ -90,7 +90,7 @@ FS = 9
 gb = fig.add_gridspec(1, 3, left=.08, right=.99, top=.255, bottom=.05, wspace=.45)
 AX = [fig.add_subplot(gb[0, j]) for j in range(3)]
 for a_ in AX: a_.tick_params(labelsize=FS, direction="in", top=True, right=True); a_.minorticks_on()
-# (c) data set
+# (c) bộ dữ liệu
 ax = AX[0]; cnt = T.groupby(["contact", "type_dft"]).size().unstack(fill_value=0).loc[["XX", "QX", "QQ"]]; bot = np.zeros(3)
 for t in ("I", "II", "III"): ax.bar(range(3), cnt[t], .6, bottom=bot, color=TT[t], edgecolor="white", lw=.8, label=f"type {t}"); bot += cnt[t].values
 for i, v in enumerate(bot): ax.text(i, v + 5, int(v), ha="center", fontsize=8)
@@ -106,7 +106,7 @@ sw = m_.groupby("pair").type_dft.nunique() > 1
 ax = AX[1]; ax.hist(x, bins=np.linspace(0, 2, 21), color="#3A6FB8", edgecolor="white", lw=.7); ax.axvline(np.median(x), c="#C0392B", ls="--", lw=1)
 ax.set_xlabel(r"|$\Delta$VBO| between faces (eV)", fontsize=10, fontweight="bold"); ax.set_ylabel("face pairs", fontsize=10, fontweight="bold")
 ax.text(.96, .95, f"{sw.sum()}/{len(sw)} pairs switch type\nmedian {np.median(x):.2f} eV", transform=ax.transAxes, ha="right", va="top", fontsize=8, bbox=dict(fc="white", ec="none", pad=1.5))
-# (f) layer-gap renormalization
+# (f) co khe theo lớp
 ax = AX[2]; T["dg1"] = T.CBM1 - T.VBM1 - T.Eg1; T["dg2"] = T.CBM2 - T.VBM2 - T.Eg2
 R = pd.DataFrame([(r.contact, r.f1, r.dg1) for r in T.itertuples()] + [(r.contact, r.f2, r.dg2) for r in T.itertuples()], columns=["contact", "face", "dg"])
 grp = [("XX", "X"), ("QX", "X"), ("QX", "Q"), ("QQ", "Q")]

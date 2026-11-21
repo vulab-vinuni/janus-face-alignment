@@ -92,11 +92,55 @@ for atoms, c in [("Te-Te", "XX"), ("As-Sb", "QQ"), ("P-Sb", "QQ"), ("S-S", "XX")
     bs = [Sfun(pd.concat([G[G.pair == p] for p in rng.choice(pp, len(pp))])) for _ in range(1000)]
     print(f"{c} {atoms}: N={len(G)} S={Sfun(G):.2f} CI {np.percentile(bs, 2.5):.2f}-{np.percentile(bs, 97.5):.2f}")
 
-# Note 2 (continued): screening refitted with SOC-corrected midgap levels, bracketing the VBM/CBM split
-soc = pd.read_csv("data/monolayers/soc_gap_reduction.csv").set_index("name").dEg_SOC_eV
+# Note 2 (continued): screening refitted with SOC-corrected midgap levels, bracketing the VBM/CBM split.
+# Same 543 interfaces as Supplementary Table 3: both monolayers keep a PBE+SOC gap > 0.05 eV (12x12 mesh).
+socd = pd.read_csv("data/monolayers/soc_gap_reduction.csv").set_index("name")
+soc, ok = socd.dEg_SOC_eV, socd.Eg_SOC_eV > .05
+m = (D.L1.map(ok) & D.L2.map(ok)).values
 d1, d2 = D.L1.map(soc), D.L2.map(soc)
+o = fit(G0[m].reset_index(drop=True), target="eVh_B", model="glr", groups="contact")
+print("no SOC, same set:", int(m.sum()), {k: round(v, 3) for k, v in o["S"].items()}, "r2 %.3f" % o["r2"])
 for f_vbm in (0.0, 0.5, 1.0):  # fraction of the (negative) gap change taken by the VBM
     G = G0.copy(); G["dE"] = G.dE + (1 - 2 * f_vbm) * (d2 - d1).values / 2; G["Eg1"] = G.Eg1 + d1.values; G["Eg2"] = G.Eg2 + d2.values
-    G = G[(G.Eg1 > .05) & (G.Eg2 > .05)]
+    G = G[m].reset_index(drop=True); G["Eg1"] = G.Eg1.clip(lower=.01); G["Eg2"] = G.Eg2.clip(lower=.01)
     o = fit(G, target="eVh_B", model="glr", groups="contact")
     print("SOC, VBM share %.1f:" % f_vbm, len(G), {k: round(v, 3) for k, v in o["S"].items()}, "r2 %.3f" % o["r2"])
+
+# Note 2 (continued): per-contact fits with and without an intercept (push-back test) and origin estimator
+for c in ("XX", "QX", "QQ"):
+    g = D[D.contact == c]; X = np.column_stack([np.ones(len(g)), g.dE]); b = np.linalg.lstsq(X, g.eVh_B, rcond=None)[0]
+    pp = g.pair.unique(); ix = {p: np.where(g.pair.values == p)[0] for p in pp}; bb = []
+    r = np.random.default_rng(2)
+    for _ in range(1000):
+        h = g.iloc[np.concatenate([ix[p] for p in r.choice(pp, len(pp))])]; bb.append(np.linalg.lstsq(np.column_stack([np.ones(len(h)), h.dE]), h.eVh_B, rcond=None)[0][0])
+    print(f"{c}: origin S {1 - (g.dE * g.eVh_B).sum() / (g.dE ** 2).sum():.3f} | with intercept S {1 - b[1]:.3f}, intercept {b[0]:+.3f} eV CI {np.percentile(bb, 2.5):+.3f} to {np.percentile(bb, 97.5):+.3f}")
+
+# Interface-dipole / intrinsic-step check: eV_h^(B) regressed on s1+s2 alone
+X = np.column_stack([np.ones(len(D)), D.s1 + D.s2]); f = X @ np.linalg.lstsq(X, D.eVh_B, rcond=None)[0]
+print("r2(eVh_B ~ s1+s2) = %.3f" % (1 - ((D.eVh_B - f) ** 2).sum() / ((D.eVh_B - D.eVh_B.mean()) ** 2).sum()))
+
+# Localization classifier: precision and recall for w_min >= 0.6
+for nm, t, p in [("CV", D.w_min >= .6, D.p_local >= .3), ("blind", B.w_min >= .6, B.regime == "localized")]:
+    print(f"{nm}: predicted localized {int(p.sum())}, truly localized {int(t.sum())}, precision {(t & p).sum() / p.sum():.2f}, recall {(t & p).sum() / t.sum():.2f}")
+
+
+# Note 2 (continued): further single descriptors (distance relative to Bondi vdW radii; band-edge weight w_min)
+rvdw = {"S": 1.80, "Se": 1.90, "Te": 2.06, "P": 1.80, "As": 1.85, "Sb": 2.06}
+rsum = np.array([rvdw[at(a, f)] + rvdw[at(b, g)] for a, f, b, g in zip(D.L1, D.f1, D.L2, D.f2)])
+for nm, v in [("d/r_vdW", D.d_int.values / rsum), ("w_min", D.w_min.values)]:
+    z = (v - v.mean()) / v.std(); X = np.column_stack([np.ones(len(D)), z]); f = np.zeros(len(D))
+    pred = lambda p, ii: (lambda a: a / (1 + a))(np.exp(X[ii] @ p)) * D.dE.values[ii]
+    for tr, te in GroupKFold(5).split(D, groups=D.pair):
+        f[te] = pred(least_squares(lambda p: pred(p, tr) - y[tr], np.zeros(2)).x, te)
+    print("descriptor", nm, "out-of-fold r2 %.3f" % (1 - ((y - f) ** 2).sum() / ((y - y.mean()) ** 2).sum()))
+
+# Supplementary Table 9: |eVh_A - eVh_B| by contact and w_min bin
+b = pd.cut(D.w_min, [0, .4, .6, .8, 1.01], labels=["<=0.4", "0.4-0.6", "0.6-0.8", ">0.8"])
+print(pd.crosstab(D.contact, b, values=(D.eVh_A - D.eVh_B).abs(), aggfunc="median").round(2))
+
+# Supplementary Table 5: CIs of the two charge-transfer directions within mixed contacts (300 pair-bootstrap resamples)
+rng = np.random.default_rng(5); bs = []
+for _ in range(300):
+    Gb = M.iloc[np.concatenate([np.where(M.pair.values == p)[0] for p in rng.choice(pairs, len(pairs))])].reset_index(drop=True)
+    o = fit(Gb, target="eVh_B", model="glr", groups="grp"); bs.append([o["S"]["XQ_Q_higher"], o["S"]["XQ_Q_lower"]])
+print("direction CIs (Q higher, Q lower):", np.percentile(bs, [2.5, 97.5], axis=0).round(2).tolist())

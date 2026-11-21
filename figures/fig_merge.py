@@ -141,13 +141,26 @@ for t in ("I", "II", "III"):
     d = Al[Al.type_hyb == t]; ax.scatter(d.dE.abs(), d.Eg1 + d.Eg2, s=3, c=TTY[t], lw=0, label=f"type {t}")
 ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$E_{g,1}+E_{g,2}$ (eV)", xlim=(0, 2.5), ylim=(0, 7.4)); ax.set_yticks(range(0, 6))
 ax.legend(loc="upper left", fontsize=7.5, markerscale=3, handletextpad=0, ncol=2, columnspacing=.3, borderaxespad=.15, handlelength=1.2)
-ax = axs[7]; fr = A.groupby("contact").type_hyb.value_counts(normalize=True).unstack().loc[["XX", "QX", "QQ"]]; bot = np.zeros(3)
-for t in ("I", "II", "III"): ax.bar(range(3), fr[t], .62, bottom=bot, color=TTY[t], edgecolor="k", lw=.5); bot += fr[t].values
-ax.set_xticks(range(3)); ax.set_xticklabels(["XX", "XQ", "QQ"]); nomx(ax); ax.set(ylim=(0, 1), ylabel="type fraction")
+# confident subset: predicted localized and type margin > 0.1 eV (ML-corrected dipole)
+v1, c1 = -A.Eg1 / 2, A.Eg1 / 2; sh = A.dE - A.eVh_hyb; v2, c2 = sh - A.Eg2 / 2, sh + A.Eg2 / 2
+A["margin"] = np.minimum.reduce([np.abs(v1 - v2), np.abs(c1 - c2), np.abs(np.minimum(c1, c2) - np.maximum(v1, v2))])
+A["conf"] = (A.p_local >= .3) & (A.margin > .1); Ac = A[A.conf]; print("confident", len(Ac))
+ax = axs[7]; w = .36
+for k, (G, col, nm) in enumerate([(T, "type_dft", "DFT"), (Ac, "type_hyb", "pred., confident")]):
+    fr = G.groupby("contact")[col].value_counts(normalize=True).unstack().reindex(["XX", "QX", "QQ"]).fillna(0); n = G.contact.value_counts().reindex(["XX", "QX", "QQ"]).fillna(0).astype(int)
+    x = np.arange(3) + (k - .5) * (w + .04); bot = np.zeros(3)
+    for t in ("I", "II", "III"): ax.bar(x, fr[t], w, bottom=bot, color=TTY[t], edgecolor="k", lw=.5, hatch=None if k == 0 else "////", alpha=1 if k == 0 else .85); bot += fr[t].values
+    if k == 1: ax.text(x[2], 1.015, f"n={n.iloc[2]}", ha="center", fontsize=6.5, va="bottom")
+ax.set_xticks(range(3)); ax.set_xticklabels(["XX", "XQ", "QQ"]); nomx(ax); ax.set(ylim=(0, 1.25), ylabel="type fraction"); ax.set_yticks(np.arange(0, 1.01, .2))
+from matplotlib.patches import Patch
+ax.legend(handles=[Patch(fc="w", ec="k", lw=.5, label="DFT (599)"), Patch(fc="w", ec="k", lw=.5, hatch="////", label="confident pred.")], loc="upper center", ncol=2, fontsize=6.6, bbox_to_anchor=(.5, 1.01), handlelength=1.2, columnspacing=.6, borderaxespad=.1)
 ax = axs[8]; A["pair"] = ["|".join(sorted([a, b])) for a, b in zip(A.L1, A.L2)]; nt = A.groupby("pair").type_hyb.nunique()
-vals = [(nt == k).sum() for k in (1, 2, 3)]
-ax.bar(range(3), vals, .62, color=["#D5D5D5", "#9A9A9A", "#4D4D4D"], edgecolor="k", lw=.5)
-for j, v in enumerate(vals): ax.text(j, v + 15, v, ha="center", fontsize=8)
-ax.set_xticks(range(3)); ax.set_xticklabels(["1", "2", "3"]); nomx(ax); ax.set(xlabel="distinct types over faces", ylabel="material pairs", ylim=(0, max(vals) * 1.18))
+Ac = A[A.conf]; g = Ac.groupby("pair"); ntc = g.type_hyb.nunique()[g.size() >= 2]
+vals = [(nt == k).sum() for k in (1, 2, 3)]; valc = [(ntc == k).sum() for k in (1, 2, 3)]; print("pairs conf>=2", len(ntc), valc)
+ax.bar(np.arange(3) - .2, vals, .38, color="#9A9A9A", edgecolor="k", lw=.5, label="all predictions")
+ax.bar(np.arange(3) + .2, valc, .38, color="#4D4D4D", edgecolor="k", lw=.5, label="confident only")
+for j, (v, u) in enumerate(zip(vals, valc)): ax.text(j - .2, v + 15, v, ha="center", fontsize=7); ax.text(j + .2, u + 15, u, ha="center", fontsize=7)
+ax.set_xticks(range(3)); ax.set_xticklabels(["1", "2", "3"]); nomx(ax); ax.set(xlabel="distinct types over faces", ylabel="material pairs", ylim=(0, max(vals) * 1.45))
+ax.legend(loc="upper right", fontsize=7, handlelength=1.2, borderaxespad=.2)
 for k, a in enumerate(axs): lab(a, "abcdefghi"[k], -.3)
 _boldticks(fig); fig.savefig("fig45.pdf", bbox_inches="tight"); fig.savefig("fig/fig45.png", bbox_inches="tight")
