@@ -86,8 +86,20 @@ for lo, hi in zip(bins[:-1], bins[1:]):
     xs.append(d.ENs.mean()); ys.append(1 - b); es.append(se)
 ax.errorbar(xs, ys, yerr=es, fmt="o", c="k", ms=3.5, capsize=2, label="binned DFT")
 xx = np.linspace(T.ENs.min(), T.ENs.max(), 100); a = np.exp(P[0] + P[1] * (xx - mu) / sd); ax.plot(xx, 1 / (1 + a), c="#C0392B", lw=1.2, label="fit")
+import re as _re2
+_at = lambda n, f: _re2.findall(r"[A-Z][a-z]?", n)[0 if f == "X" else 3]
+_pa = np.array(["-".join(sorted([_at(a_, f_), _at(b_, g_)])) for a_, f_, b_, g_ in zip(T.L1, T.f1, T.L2, T.f2)])
+def _sb(m):
+    d = T[m]; b = np.sum(d.dE * d.eVh_B) / np.sum(d.dE ** 2); res = d.eVh_B - b * d.dE
+    return d.ENs.mean(), 1 - b, np.sqrt(np.sum(res ** 2) / (len(d) - 1) / np.sum(d.dE ** 2))
+_x, _y, _e = _sb((_pa == "Te-Te") & (T.contact == "XX").values)
+ax.errorbar([_x], [_y], yerr=[_e], fmt="D", mfc="w", mec=C["XX"], ecolor=C["XX"], mew=1.3, ms=5.5, capsize=2, label="Te–Te (XX)", zorder=5)
+_q = [_sb((_pa == p) & (T.contact == "QQ").values) for p in ("As-Sb", "P-Sb")]
+ax.errorbar([v[0] for v in _q], [v[1] for v in _q], yerr=[v[2] for v in _q], fmt="s", mfc="w", mec=C["QQ"], ecolor=C["QQ"], mew=1.3, ms=5, capsize=2, label="As–Sb, P–Sb (QQ)", zorder=5)
+print("TeTe", round(_x,2), round(_y,3), "QQ-Sb", [(round(v[0],2), round(v[1],3)) for v in _q])
+
 for c, xr in (("QQ", 4.36), ("QX", 4.73), ("XX", 5.10)): ax.axvline(xr, c=C[c], lw=.6, ls=":"); ax.text(xr, .965, LB[c], color=C[c], fontsize=8, ha="center", va="top")
-ax.set(xlabel=r"$\chi_1+\chi_2$ of contact atoms", ylabel="S", ylim=(.3, 1.0)); ax.legend(loc="lower right", fontsize=8.0, bbox_to_anchor=(1.03, -0.02), handlelength=1.2)
+ax.set(xlabel=r"$\chi_1+\chi_2$ of contact atoms", ylabel="S", ylim=(.3, 1.0)); ax.legend(loc="lower right", fontsize=7.0, bbox_to_anchor=(1.03, -0.02), handlelength=1.0, labelspacing=.25)
 for k, a_ in enumerate(A): a_.text(-.32, 1.07, "abcdef"[k], transform=a_.transAxes, fontweight="bold", fontsize=10)
 _boldticks(fig); fig.savefig("fig2.png", bbox_inches="tight", dpi=170); fig.savefig("fig2.pdf", bbox_inches="tight")
 print("ENs oof r2", round(r2(T.eVh_B, pr), 3), "P", P.round(3), list(zip(np.round(xs, 2), np.round(ys, 2))))
