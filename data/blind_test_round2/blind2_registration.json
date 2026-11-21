@@ -1,0 +1,18 @@
+{
+ "file": "blind2_predictions_FROZEN.csv",
+ "sha256": "0c4570a0b5c6b98352b7c44c533bf128c004fdc1761de007a0db9f420a463009",
+ "n": 40,
+ "parts": {
+  "P_conf": 20,
+  "P_switch": 10,
+  "C_bound": 5,
+  "C_hyb": 5
+ },
+ "criteria": {
+  "type_accuracy_confident": ">=26/30",
+  "switching_pairs": ">=4/5",
+  "dipole_MAE_eV": "<=0.11"
+ },
+ "models": "frozen round-1 models (model_frozen.json, pred7796.csv)",
+ "seed": 20261121
+}
