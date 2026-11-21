@@ -3,7 +3,7 @@ plt.rcParams.update({"font.family":"DejaVu Sans","font.size":9,"axes.linewidth":
   "xtick.top":True,"ytick.right":True,"xtick.major.size":4,"ytick.major.size":4,"legend.frameon":False})
 F=pd.read_csv("data/distance_scan/distance_scan_results.csv"); D=pd.read_csv("data/heterostructures/het599_training_set.csv").set_index("id")
 sty={"H20992":("Te-Te (XX)","#1f5fbf","o"),"H21356":("Te-Te' (XX)","#1f5fbf","s"),"H03396":("S-S (XX)","#6fa8dc","D"),
-     "H14018":("P-Se (QX)","#e08e2b","^"),"H21905":("P-Te (QX)","#b35806","v"),"H03523":("P-Sb (QQ)","#2a8c6e","o"),"H15111":("As-Sb (QQ)","#7fc8a9","s")}
+     "H14018":("P-Se (XQ)","#e08e2b","^"),"H21905":("P-Te (XQ)","#b35806","v"),"H03523":("P-Sb (QQ)","#2a8c6e","o"),"H15111":("As-Sb (QQ)","#7fc8a9","s")}
 fig,ax=plt.subplots(1,2,figsize=(7.2,3.1),gridspec_kw=dict(wspace=.32))
 for i,(nm,c,m) in sty.items():
     g=F[F.id==i].sort_values("d"); h=D.loc[i]; sep=abs(h.dE)>(h.Eg1+h.Eg2)/2
