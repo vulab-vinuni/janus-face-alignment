@@ -2,9 +2,20 @@
 
 Data, models and scripts for the manuscript
 
-> V. K. An, V. K. Dien, V. M. Canh, *The contact face shapes band alignment and its predictability in Janus van der Waals heterostructures* (submitted).
+> V. K. An, V. M. Canh, V. K. Dien, *The contact face shapes band alignment and its predictability in Janus van der Waals heterostructures* (submitted to *Nature Communications*).
 
 The study covers 108 Janus X–A–M–Q monolayers (X = S, Se, Te; A = Al, Ga, In; M = Si, Ge, Sn, Pb; Q = P, As, Sb). It includes 832 explicit DFT heterostructure calculations, a contact-resolved linear-response model of the interface dipole with a machine-learned correction, a blind test whose predictions were frozen before the DFT calculations, and a confidence-resolved alignment map of 7 796 lattice-matched interfaces.
+
+## Versions
+
+Each manuscript version refers to a fixed release of this repository; the `main` branch holds the latest state.
+
+| Release | Manuscript version | What it adds |
+|---|---|---|
+| [`v1.0-draft`](https://github.com/vulab-vinuni/janus-face-alignment/releases/tag/v1.0-draft) | Earlier draft (before the *Nature Communications* revision; Supplementary Notes 1–4) | 108 monolayers, 832 heterostructures, models, blind test, alignment map, MACE phonons and MD |
+| [`v2.0-NC-submission`](https://github.com/vulab-vinuni/janus-face-alignment/releases/tag/v2.0-NC-submission) | *Nature Communications* submission (Supplementary Notes 1–8, Supplementary Data 1–2) | Interlayer-distance scan (Note 5), SOC robustness of confident predictions, supercell convergence, pre-registered transfer test on three further Janus families (Note 7), HSE06 monolayer corrections (Note 8), database of 1 328 Janus monolayers |
+
+Releases only add files; nothing described in an earlier version has been removed or changed. Supplementary figure and table numbers differ between the two manuscript versions because the Supplementary Information was reorganized for the submission.
 
 ## Contents
 
@@ -24,9 +35,15 @@ The study covers 108 Janus X–A–M–Q monolayers (X = S, Se, Te; A = Al, Ga, 
 | `models/mace/` | Fine-tuned MACE potential used in the paper (`xamq_F2.model`; two-stage fine-tuning from MACE-MP-0 medium via `xamq_F.model`) and its data set (`train_F.xyz`, 9 453; `valid_F.xyz`, 1 093 configurations; extended XYZ with `REF_energy`, `REF_forces`, `REF_stress` from QE PBE). All configurations of 15 compounds, including SeInPbP and TeAlSnSb, are excluded. `archive_B330/` holds an earlier model for reference |
 | `data/monolayers/monolayers108_relaxed.extxyz` | Relaxed unit cells of the 108 monolayers (PBE+D3(BJ), QE) |
 | `data/md300K/md300K_summary.csv` | NVT MD at 300 K (fine-tuned MACE, 6×6 supercells, 5 ps): mean temperature, energy fluctuation and drift, mean-square and maximum out-of-plane displacement, broken bonds for all 108 monolayers |
+| `data/distance_scan/` | Rigid interlayer-distance scan of seven interfaces (Supplementary Note 5): input points and screening factor along the scan |
+| `data/transfer_test/` | Pre-registered transfer test (Supplementary Note 7): frozen selection and registration file (recorded before any DFT), MACE stacking scan, monolayer strain data, per-interface results and screening factors by family and contact |
+| `data/hse/` | HSE06 monolayer corrections (VASP; Supplementary Note 8): inputs, job script, face-resolved PBE/HSE06 band edges of the 108 monolayers and the propagation summary |
+| `data/janus1328/` | Database of 1 328 Janus monolayers in five families used for the transfer test: properties (Supplementary Data 2) and relaxed structures |
+| `data/blind_test_round2/` | Frozen predictions and registration of a second blind round (40 interfaces) |
+| `data/phonons/supercell_convergence.csv` | Lowest near-Γ frequency in 6×6, 8×8 and 10×10 supercells for ten compounds |
 | `models/model_frozen.json` | Frozen parameters of the contact-resolved model (S_XX, S_XQ, S_QQ, d_int) and classifier thresholds used in the blind test |
 | `workflow/qe/` | Quantum ESPRESSO workflow: monolayer strain grid, effective masses, bilayer relaxation and post-processing (layer projection, electrostatic potential), result assembly |
-| `analysis/` | Linear-response models, ML residual, localization and SBO classifiers, blind-test selection and evaluation, alignment-map prediction, MACE phonon and MD scripts |
+| `analysis/` | Linear-response models, ML residual, localization and SBO classifiers, blind-test selection and evaluation, alignment-map prediction, MACE phonon and MD scripts; `robustness_stats.py` and `soc_confident.py` (Supplementary Notes 1–4, SOC), `distance_scan/`, `transfer_test/`, `hse/` |
 | `figures/` | Scripts that generate the main and supplementary figures |
 
 Notation: `f1`, `f2` are the faces in contact (X = chalcogen, Q = pnictogen); `contact` ∈ {XX, XQ, QQ}; energies in eV, lengths in Å.
