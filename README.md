@@ -36,7 +36,7 @@ Releases only add files; nothing described in an earlier version has been remove
 | `data/monolayers/monolayers108_relaxed.extxyz` | Relaxed unit cells of the 108 monolayers (PBE+D3(BJ), QE) |
 | `data/md300K/md300K_summary.csv` | NVT MD at 300 K (fine-tuned MACE, 6×6 supercells, 5 ps): mean temperature, energy fluctuation and drift, mean-square and maximum out-of-plane displacement, broken bonds for all 108 monolayers |
 | `data/distance_scan/` | Rigid interlayer-distance scan of seven interfaces (Supplementary Note 5): input points and screening factor along the scan |
-| `data/transfer_test/` | Pre-registered transfer test (Supplementary Note 7): frozen selection and registration file (recorded before any DFT), MACE stacking scan, monolayer strain data, per-interface results and screening factors by family and contact |
+| `data/transfer_test/` | Pre-registered transfer test (Supplementary Note 7): frozen selection and registration file (recorded before any DFT), MACE stacking scan, DFT-relaxed geometries, monolayer strain data, per-interface results and screening factors by family and contact |
 | `data/hse/` | HSE06 monolayer corrections (VASP; Supplementary Note 8): inputs, job script, face-resolved PBE/HSE06 band edges of the 108 monolayers and the propagation summary |
 | `data/janus1328/` | Database of 1 328 Janus monolayers in five families used for the transfer test: properties (Supplementary Data 2) and relaxed structures |
 | `data/blind_test_round2/` | Frozen predictions and registration of a second blind round (40 interfaces) |
