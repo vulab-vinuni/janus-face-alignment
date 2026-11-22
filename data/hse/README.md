@@ -1,0 +1,2 @@
+# HSE06 monolayer corrections (Supplementary Note 8)
+VASP 6.5 collinear HSE06 on the unstrained PBE geometries (inputs and job script here). hse108_vasp.csv: face-resolved IP/EA for PBE and HSE06 on the same 12x12 mesh, and HSE06-PBE shifts of VBM/CBM relative to the mean vacuum level (dVBM_hse, dCBM_hse). hse108_time.txt: timings; SAlPbSb and SAlSnSb (gapless) did not converge (149 steps). hse_dft_set_summary.csv: output of analysis/hse/hse_propagation.py.
