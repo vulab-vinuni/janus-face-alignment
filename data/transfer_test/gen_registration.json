@@ -1,0 +1,22 @@
+{
+ "file": "gen_selection_FROZEN.csv",
+ "sha256": "0bcdd3babcfbbcd8b8f07e08dfa39b1956977c80e05e99736c171be497ae2ac9",
+ "n": 102,
+ "by_family_contact": {
+  "BiTeI/Ch-Ch": 11,
+  "BiTeI/Ch-Ha": 11,
+  "BiTeI/Ha-Ha": 11,
+  "L4/Ch-Ch": 16,
+  "L4/Ch-Pn": 16,
+  "L4/Pn-Pn": 16,
+  "MXY/Ch-Ch": 21
+ },
+ "rule": "strong screening requires a pnictogen face; coupling modulates but does not create it",
+ "criteria": {
+  "1": "S (through origin, per family and contact class) >= 0.72 for every class without a pnictogen face (BiTeI Ch-Ch, Ch-Ha, Ha-Ha; L4 Ch-Ch; MXY Ch-Ch)",
+  "2": "S <= 0.65 for Pn-Pn contacts (L4 IV-V layers); Ch-Pn contacts (L4) intermediate",
+  "3": "pair-bootstrap 95% CI of the Pn-Pn class does not overlap with that of any class without a pnictogen face"
+ },
+ "seed": 20261122,
+ "date": "2026-11-22"
+}
