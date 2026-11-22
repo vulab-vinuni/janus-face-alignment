@@ -5,7 +5,7 @@ H = pd.read_csv("data/hse/hse108_vasp.csv").set_index("name"); M = pd.read_csv("
 g = H[(M0.Eg.reindex(H.index) > .05)]; Mel = g.index.str.extract(r"(Si|Ge|Sn|Pb)")[0].values
 cols = {"Si": "#1f5fa8", "Ge": "#3fa34d", "Sn": "#e08a1e", "Pb": "#c8302a"}
 R = pd.read_csv("data/hse/hse_dft_set_summary.csv")
-fig, ax = plt.subplots(1, 4, figsize=(10, 2.7))
+fig, axs = plt.subplots(2, 2, figsize=(7.2, 6.0)); ax = axs.ravel()
 a = ax[0]
 for m, c in cols.items():
     k = Mel == m; a.scatter(M0.Eg.reindex(g.index)[k], (M0.Eg.reindex(g.index) + g.dCBM_hse - g.dVBM_hse)[k], s=14, color=c, lw=0, label=f"M = {m}")
@@ -29,4 +29,4 @@ for i, v in [(1, 95.8), (2, 95.1)]: d.text(i + .17, v + 2, f"{v:.0f}", ha="cente
 d.set_xticks(x); d.set_xticklabels(lab); d.tick_params(axis="x", which="minor", bottom=False, top=False); d.set_ylim(0, 128); d.set_ylabel("Fraction (%)")
 d.legend(loc="upper left", fontsize=7, handletextpad=.3)
 for i, a in enumerate(ax): a.text(-.22, 1.03, "abcd"[i], transform=a.transAxes, fontweight="bold", fontsize=11)
-plt.tight_layout(w_pad=1.2); plt.savefig("/tmp/claude-0/-home-claude/1cc01a84-5ce5-5f61-b3d7-0b32c6854667/scratchpad/hseres/figS_hse.pdf"); plt.savefig("/tmp/claude-0/-home-claude/1cc01a84-5ce5-5f61-b3d7-0b32c6854667/scratchpad/hseres/figS_hse.png", dpi=170)
+plt.tight_layout(w_pad=1.5, h_pad=1.5); plt.savefig("/tmp/claude-0/-home-claude/1cc01a84-5ce5-5f61-b3d7-0b32c6854667/scratchpad/hseres/figS_hse.pdf"); plt.savefig("/tmp/claude-0/-home-claude/1cc01a84-5ce5-5f61-b3d7-0b32c6854667/scratchpad/hseres/figS_hse.png", dpi=170)

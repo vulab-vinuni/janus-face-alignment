@@ -4,7 +4,7 @@ plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 9, "axes.linewid
     "axes.labelsize": 9.5, "axes.labelweight": "bold", "mathtext.fontset": "cm", "mathtext.default": "it"})
 D = pd.read_csv("gen_table.csv"); D["metal"] = D[["Eg1m", "Eg2m"]].min(axis=1) <= 0
 fam = {"BiTeI": (["Ch-Ch", "Ch-Ha", "Ha-Ha"], ["#1f5fa8", "#3fa34d", "#8e5bb5"]), "L4": (["Ch-Ch", "Ch-Pn", "Pn-Pn"], ["#1f5fa8", "#e08a1e", "#c8302a"]), "MXY": (["Ch-Ch"], ["#1f5fa8"])}
-fig, ax = plt.subplots(1, 4, figsize=(10, 2.8)); x = np.linspace(-1.5, 1.5, 5)
+fig, axs = plt.subplots(2, 2, figsize=(7.2, 6.2)); ax = axs.ravel(); x = np.linspace(-1.5, 1.5, 5)
 for k, (f, (cl, cols)) in enumerate(fam.items()):
     a = ax[k]
     for c, col in zip(cl, cols):
