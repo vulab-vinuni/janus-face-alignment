@@ -58,10 +58,47 @@ def _patch():
                 q = t._norig / ref
                 size = 7 if q >= 0.95 else 6.5 if q >= 0.82 else 6 if q >= 0.68 else 5.5
             t.set_fontsize(size * k)
+        from matplotlib.lines import Line2D
+        from matplotlib.patches import Patch
+        from matplotlib.collections import Collection
+        def thin(v, f, lo, hi):
+            p = v / k
+            return min(max(p * f, lo), hi) * k if p > 0 else v
+        for o in fig.findobj(Line2D):
+            if not hasattr(o, '_nlw'): o._nlw = o.get_linewidth(); o._nmew = o.get_markeredgewidth()
+            o.set_linewidth(thin(o._nlw, 0.6, 0.4, 1.0)); o.set_markeredgewidth(thin(o._nmew, 0.5, 0.25, 0.5))
+        for o in fig.findobj(Collection):
+            if not hasattr(o, '_nlw'): o._nlw = list(o.get_linewidths())
+            o.set_linewidths([thin(v, 0.5, 0.25, 0.75) for v in o._nlw])
+        for o in fig.findobj(Patch):
+            if o in [sp for ax in fig.axes for sp in ax.spines.values()] or o is fig.patch: continue
+            if not hasattr(o, '_nlw'): o._nlw = o.get_linewidth()
+            o.set_linewidth(thin(o._nlw, 0.5, 0.25, 0.6))
         for ax in fig.axes:
-            ax.tick_params(which='major', labelsize=6.5 * k, width=0.6 * k, length=3.0 * k, labelfontfamily=FONT)
-            ax.tick_params(which='minor', width=0.45 * k, length=1.8 * k)
-            for sp in ax.spines.values(): sp.set_linewidth(0.75 * k)
+            if getattr(ax, 'name', '') != 'rectilinear': continue
+            vis = [sp.get_visible() for sp in ax.spines.values()]
+            xl = any(t.get_visible() and t.get_text() for t in ax.get_xticklabels())
+            yl = any(t.get_visible() and t.get_text() for t in ax.get_yticklabels())
+            right = ax.yaxis.get_ticks_position() == 'right' or ax.yaxis.get_label_position() == 'right'
+            top = ax.xaxis.get_label_position() == 'top'
+            is_cbar = hasattr(ax, '_colorbar') or ax.get_label() == '<colorbar>'
+            sib = [b for b in ax.get_shared_y_axes().get_siblings(ax) + ax.get_shared_x_axes().get_siblings(ax) if b is not ax]
+            p0 = ax.get_position()
+            row = [b for b in fig.axes if b is not ax and abs(b.get_position().y0 - p0.y0) < 0.01 and abs(b.get_position().height - p0.height) < 0.01]
+            sib = sib + row
+            sl = any(any(t.get_visible() and t.get_text() for t in b.get_yticklabels()) for b in sib) and len(ax.get_yticks()) > 0 and ax.yaxis.get_visible()
+            if all(vis) and (xl or yl or sl) and not is_cbar:
+                ax.spines['top'].set_visible(top); ax.spines['right'].set_visible(right)
+                if not top: ax.spines['top'].set_visible(False)
+                if not right: ax.spines['right'].set_visible(False)
+                ax.tick_params(which='both', direction='out', top=top, right=right,
+                               bottom=not top, left=not right)
+                ax.minorticks_off()
+            elif all(vis) and not is_cbar:
+                ax.tick_params(which='both', direction='out', top=False, right=False)
+                ax.minorticks_off()
+            ax.tick_params(which='major', labelsize=6.5 * k, width=0.5 * k, length=2.5 * k, pad=2 * k, labelfontfamily=FONT)
+            for sp in ax.spines.values(): sp.set_linewidth(0.5 * k)
 
     def savefig(self, *a, **kw):
         k = self.get_size_inches()[0] / 7.2
