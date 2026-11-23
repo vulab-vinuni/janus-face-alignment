@@ -88,9 +88,9 @@ def _patch():
             sib = sib + row
             sl = any(any(t.get_visible() and t.get_text() for t in b.get_yticklabels()) for b in sib) and len(ax.get_yticks()) > 0 and ax.yaxis.get_visible()
             if all(vis) and (xl or yl or sl) and not is_cbar:
-                ax.spines['top'].set_visible(top); ax.spines['right'].set_visible(right)
-                if not top: ax.spines['top'].set_visible(False)
-                if not right: ax.spines['right'].set_visible(False)
+                pass  # closed frame kept: ax.spines['top'].set_visible(top); ax.spines['right'].set_visible(right)
+                pass  # closed frame kept: if not top: ax.spines['top'].set_visible(False)
+                pass  # closed frame kept: if not right: ax.spines['right'].set_visible(False)
                 ax.tick_params(which='both', direction='out', top=top, right=right,
                                bottom=not top, left=not right)
                 ax.minorticks_off()
