@@ -9,6 +9,7 @@ PANEL = re.compile(r'^\(?[a-l]\)?$')
 
 def _patch():
     import matplotlib, matplotlib.colors
+    import matplotlib._mathtext as _mt; _mt.SHRINK_FACTOR = 0.75
     from matplotlib.figure import Figure
     from matplotlib.text import Text
     from matplotlib.legend import Legend
@@ -52,11 +53,11 @@ def _patch():
                 t.set_text(s.strip('()')); t.set_fontsize(8 * k); t.set_fontweight('bold'); continue
             t.set_fontweight('normal')
             if r == 'label': size = 7
-            elif r == 'tick': size = 6.5
-            elif r == 'legend': size = 6
+            elif r == 'tick': size = 7
+            elif r == 'legend': size = 7
             else:
                 q = t._norig / ref
-                size = 7 if q >= 0.95 else 6.5 if q >= 0.82 else 6 if q >= 0.68 else 5.5
+                size = 7
             t.set_fontsize(size * k)
         from matplotlib.lines import Line2D
         from matplotlib.patches import Patch
@@ -97,7 +98,7 @@ def _patch():
             elif all(vis) and not is_cbar:
                 ax.tick_params(which='both', direction='out', top=False, right=False)
                 ax.minorticks_off()
-            ax.tick_params(which='major', labelsize=6.5 * k, width=0.5 * k, length=2.5 * k, pad=2 * k, labelfontfamily=FONT)
+            ax.tick_params(which='major', labelsize=7 * k, width=0.5 * k, length=2.5 * k, pad=2 * k, labelfontfamily=FONT)
             for sp in ax.spines.values(): sp.set_linewidth(0.5 * k)
 
     def savefig(self, *a, **kw):
