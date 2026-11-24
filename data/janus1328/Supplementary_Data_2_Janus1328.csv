@@ -191,7 +191,7 @@ HfGeNGeAs_MA2Z4,MA2Z4,,3.4468,0.1073,False,0.0,True,False
 OMoTe_2H,MXY,2H,3.1931,0.1938,False,0.0,True,False
 STlSiBi,XAMQ,,4.1232,0.8968,False,0.0,True,False
 SInCBi,XAMQ,,3.7453,1.1114,False,0.0,True,False
-CrSiAsGeN_MA2Z4,MA2Z4,,3.1647,0.0243,False,1.84,True,False
+CrSiAsGeN_MA2Z4,MA2Z4,,3.1647,0.0398,False,0.39,True,False
 SeGaSnN,XAMQ,,3.5812,0.6894,False,0.0,True,False
 SeOsTe_1T,MXY,1T,3.7835,0.0,True,-0.0,True,False
 OBSnN,XAMQ,,3.054,0.6562,False,0.0,True,False
@@ -306,7 +306,7 @@ SeAlSnP,XAMQ,,3.8744,1.3557,False,0.0,True,False
 SSbI_a_BiTeI,BiTeI,a,4.0812,1.5968,False,0.0,True,True
 OBSnSb,XAMQ,,2.9132,0.0315,False,0.0,False,False
 OGaTlSe_L4,L4,,3.481,0.0869,False,0.0,True,False
-CrSiAsSnN_MA2Z4,MA2Z4,,3.417,0.0,True,2.09,True,False
+CrSiAsSnN_MA2Z4,MA2Z4,,3.417,0.0,True,2.05,True,False
 TeAlTlTe_L4,L4,,4.2747,0.7319,False,0.0,True,True
 OInSnBi,XAMQ,,3.4783,0.0494,False,0.0,True,False
 SHfSe_2H,MXY,2H,3.6089,0.9343,False,0.0,True,False
@@ -316,7 +316,7 @@ NbSiNSnAs_MA2Z4,MA2Z4,,3.0111,0.0474,False,0.0,True,False
 WSiPSiAs_MA2Z4,MA2Z4,,3.5173,0.5667,False,0.0,True,False
 TeInSiAs,XAMQ,,3.9777,0.0857,False,0.0,True,False
 TeAlGeAs,XAMQ,,3.9451,1.166,False,0.0,True,False
-TiSnPSnAs_MA2Z4,MA2Z4,,3.8882,0.0399,False,0.0,True,False
+TiSnPSnAs_MA2Z4,MA2Z4,,3.8882,0.1304,False,0.0,True,False
 AsPbSiAs_L4,L4,,3.8868,0.39,False,0.0,True,False
 MoSiPSnP_MA2Z4,MA2Z4,,3.5858,0.1184,False,0.0,True,False
 SReTe_2H,MXY,2H,3.2611,0.0906,False,0.16,True,False
@@ -414,7 +414,7 @@ TiGePSnP_MA2Z4,MA2Z4,,3.7293,0.1783,False,0.0,True,False
 ORuS_1T,MXY,1T,3.1365,0.0713,False,1.93,True,False
 ORuSe_2H,MXY,2H,2.9401,0.0359,False,0.21,True,False
 TeInSiBi,XAMQ,,4.262,0.8354,False,0.0,True,False
-CrSnPSnAs_MA2Z4,MA2Z4,,3.7988,0.0,True,2.24,True,False
+CrSnPSnAs_MA2Z4,MA2Z4,,3.7988,0.0428,False,2.11,True,False
 TeBSiN,XAMQ,,3.2167,0.8964,False,0.0,True,False
 TeBiI_a_BiTeI,BiTeI,a,4.4289,1.5148,False,0.0,True,False
 SeGaGeN,XAMQ,,3.3808,0.1707,False,0.0,True,False
@@ -590,7 +590,7 @@ SPbSe_1T,MXY,1T,3.866,0.54,False,0.0,True,True
 STlSnAs,XAMQ,,4.0753,1.0333,False,0.0,True,False
 MoSiAsSnAs_MA2Z4,MA2Z4,,3.6219,0.061,False,0.0,True,False
 HfSnNSnAs_MA2Z4,MA2Z4,,3.6093,0.0417,False,0.0,True,False
-CrGeNSnAs_MA2Z4,MA2Z4,,3.0636,0.0585,False,1.43,True,False
+CrGeNSnAs_MA2Z4,MA2Z4,,3.0636,0.0526,False,2.57,True,False
 SAsI_a_BiTeI,BiTeI,a,3.8107,1.6836,False,0.0,True,True
 ZrSnNSnP_MA2Z4,MA2Z4,,3.5863,0.159,False,0.0,True,False
 TeTlSnAs,XAMQ,,4.2525,0.2826,False,0.0,True,False
@@ -624,7 +624,7 @@ OBSnAs,XAMQ,,2.7816,0.0,True,0.0,False,False
 SGaGeSb,XAMQ,,3.9053,0.2865,False,0.0,True,False
 SeBSiAs,XAMQ,,3.4717,0.3705,False,0.0,True,False
 AsGeGeSb_L4,L4,,3.9577,0.2864,False,0.0,True,False
-SCrTe_2H,MXY,2H,3.2781,0.047,False,2.0,True,False
+SCrTe_2H,MXY,2H,3.2781,0.2465,False,0.0,True,False
 VSiAsSnAs_MA2Z4,MA2Z4,,3.6348,0.0581,False,1.05,True,False
 OOsS_1T,MXY,1T,2.9434,0.0,True,-0.0,True,False
 OBPbN,XAMQ,,3.0695,0.1007,False,0.0,True,False
@@ -732,7 +732,7 @@ TeInGeBi,XAMQ,,4.3164,0.5357,False,0.0,True,False
 OAlAlSe_L4,L4,,3.3398,0.196,False,0.0,True,False
 BiGeSiP_L4,L4,,3.8327,0.1925,False,0.0,True,False
 SeGaTlSe_L4,L4,,3.9968,0.6979,False,0.0,True,True
-OCrTe_2H,MXY,2H,3.1698,0.0248,False,2.47,True,False
+OCrTe_2H,MXY,2H,3.1698,0.038,False,3.57,True,False
 OSnTe_1T,MXY,1T,3.308,0.0935,False,0.0,False,False
 TaGeNSnP_MA2Z4,MA2Z4,,3.3795,0.0436,False,0.0,True,False
 VGePSnN_MA2Z4,MA2Z4,,3.3853,0.0398,False,1.01,True,False
@@ -745,7 +745,7 @@ TeSbI_a_BiTeI,BiTeI,a,4.3202,1.1873,False,0.0,True,False
 AsPbSnBi_L4,L4,,4.3077,0.2547,False,0.0,True,False
 OTiS_2H,MXY,2H,3.0931,0.6266,False,0.0,True,False
 TiSiNSnP_MA2Z4,MA2Z4,,2.9728,0.0992,False,0.0,True,False
-CrSiAsSnAs_MA2Z4,MA2Z4,,3.6377,0.0396,False,1.79,True,False
+CrSiAsSnAs_MA2Z4,MA2Z4,,3.6377,0.0694,False,2.14,True,False
 WSiAsGeN_MA2Z4,MA2Z4,,3.2809,0.1085,False,0.0,True,False
 PPbGeSb_L4,L4,,4.0474,0.7819,False,0.0,True,True
 HfSnNSnP_MA2Z4,MA2Z4,,3.5705,0.159,False,0.0,True,False
@@ -795,7 +795,7 @@ OPbS_2H,MXY,2H,3.3879,0.1266,False,0.0,True,False
 SeBCAs,XAMQ,,3.1798,2.0297,False,0.0,True,False
 SeReTe_2H,MXY,2H,3.54,0.0,True,0.74,True,False
 OGaSiBi,XAMQ,,3.5093,0.1231,False,0.0,True,False
-OCrS_1T,MXY,1T,2.9306,0.0639,False,2.1,True,False
+OCrS_1T,MXY,1T,2.9306,0.0798,False,0.01,True,False
 SInGeBi,XAMQ,,4.1218,0.397,False,0.0,True,False
 OGaPbN,XAMQ,,3.3383,0.7769,False,0.0,True,False
 OMoS_1T,MXY,1T,3.0525,0.0501,False,0.0,True,False
@@ -803,7 +803,7 @@ SGaGeN,XAMQ,,3.2974,0.9774,False,0.0,True,False
 TeGaPbBi,XAMQ,,4.3355,0.2075,False,0.0,True,False
 NbSiPGeP_MA2Z4,MA2Z4,,3.5724,0.0878,False,0.0,True,False
 TeBGeN,XAMQ,,3.3246,1.4718,False,0.0,True,False
-CrSnNSnP_MA2Z4,MA2Z4,,3.4743,0.0587,False,2.26,True,False
+CrSnNSnP_MA2Z4,MA2Z4,,3.4743,0.0518,False,2.17,True,False
 SIrSe_1T,MXY,1T,3.6371,0.1446,False,-0.0,True,False
 SeTiTe_1T,MXY,1T,3.6514,0.0861,False,0.0,True,False
 SPtTe_1T,MXY,1T,3.8086,0.8966,False,0.0,True,True
@@ -843,7 +843,7 @@ SeMoTe_1T,MXY,1T,3.3887,0.1229,False,0.0,True,False
 SeGaGeSb,XAMQ,,3.986,0.6285,False,0.0,True,False
 OAlSnP,XAMQ,,3.397,0.0542,False,0.0,True,False
 OGaTlS_L4,L4,,3.4848,0.1931,False,0.0,True,False
-CrGePSnN_MA2Z4,MA2Z4,,3.4079,0.0588,False,2.02,True,False
+CrGePSnN_MA2Z4,MA2Z4,,3.4079,0.0417,False,2.01,True,False
 SeSbI_b_BiTeI,BiTeI,b,4.0589,1.3133,False,0.0,True,True
 OGaPbAs,XAMQ,,3.5242,0.1489,False,0.0,True,False
 NbSiAsSnAs_MA2Z4,MA2Z4,,3.7079,0.12,False,0.0,True,False
@@ -873,7 +873,7 @@ ZrSiNSiP_MA2Z4,MA2Z4,,3.2729,0.0262,False,0.0,True,False
 SGaGaTe_L4,L4,,3.896,0.9064,False,0.0,True,False
 OTaSe_1T,MXY,1T,3.2574,0.062,False,0.0,True,False
 SNiSe_2H,MXY,2H,3.4887,0.0444,False,-0.0,True,False
-CrGeAsSnAs_MA2Z4,MA2Z4,,3.6661,0.0,True,1.84,True,False
+CrGeAsSnAs_MA2Z4,MA2Z4,,3.6661,0.0745,False,2.12,True,False
 OAlInSe_L4,L4,,3.3763,0.1099,False,0.0,True,False
 OOsSe_1T,MXY,1T,2.9041,0.2481,False,-0.0,True,False
 OZrTe_1T,MXY,1T,3.5573,0.2462,False,0.0,True,False
@@ -1066,7 +1066,7 @@ SGaInS_L4,L4,,3.77,1.7574,False,0.0,True,True
 SAlTlS_L4,L4,,3.7761,1.2461,False,0.0,True,True
 CrSiNGeP_MA2Z4,MA2Z4,,3.0379,0.0551,False,-0.0,True,False
 TaSnNSnAs_MA2Z4,MA2Z4,,3.5446,0.05,False,0.0,True,False
-CrSiNGeAs_MA2Z4,MA2Z4,,2.9031,0.0,True,1.1,True,False
+CrSiNGeAs_MA2Z4,MA2Z4,,2.9031,0.0,True,1.25,True,False
 SPtSe_2H,MXY,2H,3.5357,0.0678,False,0.0,True,False
 HfGeAsSnP_MA2Z4,MA2Z4,,3.8363,0.271,False,0.0,True,False
 BiGePbP_L4,L4,,4.1157,0.2562,False,0.0,True,False
@@ -1113,7 +1113,7 @@ OInTlTe_L4,L4,,3.7344,0.2027,False,0.0,True,False
 OTlGeBi,XAMQ,,3.8595,0.1942,False,0.0,True,False
 OInPbSb,XAMQ,,3.7817,0.0891,False,0.0,True,False
 WSiPSnAs_MA2Z4,MA2Z4,,3.6076,0.0343,False,0.0,True,False
-CrGeAsSnN_MA2Z4,MA2Z4,,3.4146,0.0,True,2.06,True,False
+CrGeAsSnN_MA2Z4,MA2Z4,,3.4146,0.0462,False,2.45,True,False
 TeAlSnP,XAMQ,,4.0212,1.5612,False,0.0,True,False
 SeAlCSb,XAMQ,,3.5797,1.9361,False,0.0,True,False
 ONbTe_2H,MXY,2H,3.3272,0.0334,False,0.0,True,False
