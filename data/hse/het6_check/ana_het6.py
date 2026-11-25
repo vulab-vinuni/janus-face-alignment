@@ -37,7 +37,7 @@ def edges(d, nion, nv, spin):
     for L, W in ((1, W1), (2, 1 - W1)):
         V, C = -1e9, 1e9
         for k in range(len(E)):
-            o = np.argsort(E[k]); cw = np.cumsum(W[k][o]) * spin; e = E[k][o]
+            o = np.argsort(E[k]); cw = np.cumsum(W[k][o]) * spin; e = E[k][o]   # cumulative electrons of layer L (spin = electrons per band)
             V = max(V, e[np.argmax(cw >= nv[L - 1] - spin / 2)]); C = min(C, e[np.argmax(cw >= nv[L - 1] + spin / 2)])
         r[f"VBM{L}"], r[f"CBM{L}"] = V - ref, C - ref
     r["dPhi_bi"] = vt - vb; return r
@@ -48,7 +48,7 @@ rows = []
 for hid in open("het6.txt").read().split():
     d = f"calc/{hid}"; l1, l2 = open(f"{d}/layers.txt").read().split(); z = zvals(f"{d}/POTCAR")
     if not os.path.exists(f"{d}/DONE"): print(hid, "not done"); continue
-    nv = [sum(z[:4]) / 2, sum(z[4:]) / 2]
+    nv = [sum(z[:4]), sum(z[4:])]   # valence electrons of each layer
     P = edges(f"{d}/1_pbe", 8, nv, 2.0); Hh = edges(f"{d}/2_hse", 8, nv, 2.0)
     r = dict(id=hid, L1=l1, L2=l2, dPhi_bi_pbe=P["dPhi_bi"], dPhi_bi_hse=Hh["dPhi_bi"])
     pred = {}
@@ -60,7 +60,7 @@ for hid in open("het6.txt").read().split():
     r["type_hse_direct"], r["m_hse_direct"] = typ(Hh["VBM1"], Hh["CBM1"], Hh["VBM2"], Hh["CBM2"])
     r["type_hse_mono"], r["m_hse_mono"] = typ(pred["VBM1"], pred["CBM1"], pred["VBM2"], pred["CBM2"])
     if os.path.exists(f"{d}/DONE_SOC"):
-        nv2 = [2 * x for x in nv]; Ps = edges(f"{d}/3_pbesoc", 8, nv2, 1.0); Hs = edges(f"{d}/4_hsesoc", 8, nv2, 1.0)
+        Ps = edges(f"{d}/3_pbesoc", 8, nv, 1.0); Hs = edges(f"{d}/4_hsesoc", 8, nv, 1.0)
         ad = {}
         for L, n in ((1, l1), (2, l2)):   # monolayer-derived: PBE + HSE06 shift + SOC gap reduction on the VBM (share 1.0)
             ad[f"VBM{L}"] = P[f"VBM{L}"] + H.loc[n, "dVBM_hse"] - S.loc[n, "dEg_SOC_eV"]; ad[f"CBM{L}"] = P[f"CBM{L}"] + H.loc[n, "dCBM_hse"]

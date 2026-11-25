@@ -26,12 +26,12 @@ NB=$(( (${NEL%.*} + 1) / 2 + 24 )); echo $NEL $NB > nbands.txt
 run() { # $1 dir  $2 INCAR template  $3 nbands  $4 binary  $5 wavecar-from
   mkdir -p $1; cp POSCAR POTCAR $R/KPOINTS $1/; sed "s/__NB__/$3/" $R/$2 > $1/INCAR; [ -n "$5" ] && mv $5/WAVECAR $1/
   cd $1; t0=$(date +%s); mpiexec.hydra -n $SLURM_NTASKS $4 > stdout.txt 2>&1; t1=$(date +%s); cd ..
-  ne=$(grep -c ':' $1/OSZICAR); grep -q "F=" $1/OSZICAR && s=OK || s=FAIL
+  ne=$(grep -c ':' $1/OSZICAR); nl=$(grep -o 'NELM *= *[0-9]*' $1/INCAR | grep -o '[0-9]*$'); grep -q "F=" $1/OSZICAR && [ $ne -lt $nl ] && s=OK || s=FAIL
   echo "$n $1 $s $((t1-t0))s nscf=$ne" >> $R/het6_time.txt; [ $s = OK ]; }
 if [ ! -f DONE ]; then
-  run 1_pbe INCAR.pbe $NB $VS "" && run 2_hse INCAR.hse $NB $VS 1_pbe && { rm -f 2_hse/WAVECAR 2_hse/CHG*; touch DONE; }
+  run 1_pbe INCAR.pbe$SUF $NB $VS "" && run 2_hse INCAR.hse$SUF $NB $VS 1_pbe && { rm -f 2_hse/WAVECAR 2_hse/CHG*; touch DONE; }
 fi
 if grep -qx $n $R/soc3.txt && [ ! -f DONE_SOC ]; then
-  run 3_pbesoc INCAR.pbesoc $((2*NB)) $VN "" && run 4_hsesoc INCAR.hsesoc $((2*NB)) $VN 3_pbesoc && { rm -f 4_hsesoc/WAVECAR 4_hsesoc/CHG*; touch DONE_SOC; }
+  run 3_pbesoc INCAR.pbesoc$SUF $((2*NB)) $VN "" && run 4_hsesoc INCAR.hsesoc$SUF $((2*NB)) $VN 3_pbesoc && { rm -f 4_hsesoc/WAVECAR 4_hsesoc/CHG*; touch DONE_SOC; }
 fi
 rm -f */WAVECAR
