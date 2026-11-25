@@ -3,7 +3,7 @@ PREC = Accurate ; ENCUT = 400 ; EDIFF = 1E-6
 ISMEAR = 0 ; SIGMA = 0.05
 ISTART = 1 ; ICHARG = 0
 LHFCALC = .TRUE. ; HFSCREEN = 0.2 ; AEXX = 0.25
-ALGO = Normal ; NELM = 250 ; AMIX = 0.2 ; BMIX = 0.0001
+ALGO = Damped ; TIME = 0.2 ; NELM = 300
 PRECFOCK = Fast ; NKREDX = 2 ; NKREDY = 2
 IBRION = -1 ; NSW = 0
 IDIPOL = 3 ; LDIPOL = .TRUE. ; DIPOL = 0.5 0.5 0.5
