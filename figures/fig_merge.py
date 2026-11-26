@@ -99,9 +99,9 @@ for k, a in enumerate(axs): lab(a, "abcdef"[k], -.08 if k == 0 else -.3)
 _boldticks(fig); fig.savefig("fig3m.pdf", bbox_inches="tight"); fig.savefig("fig/fig3m.png", bbox_inches="tight")
 # ================= Figure 4: hybridization, ML and validation (2 x 3) =================
 figM = plt.figure(figsize=(7.3, 6.0)); gM = figM.add_gridspec(2, 2, wspace=.30, hspace=.42)
-figS = plt.figure(figsize=(7.3, 5.4)); gS = figS.add_gridspec(2, 3, wspace=.42, hspace=.75)
-axs = [figM.add_subplot(gM[0, 0]), figS.add_subplot(gS[0, 0]), figM.add_subplot(gM[0, 1]), figS.add_subplot(gS[0, 1]), figS.add_subplot(gS[0, 2]),
-       figS.add_subplot(gS[1, 0]), figM.add_subplot(gM[1, 0]), figM.add_subplot(gM[1, 1]), figS.add_subplot(gS[1, 1])]
+figS = plt.figure(figsize=(7.3, 5.0)); gS = figS.add_gridspec(2, 6, wspace=1.45, hspace=.6)
+axs = [figM.add_subplot(gM[0, 0]), figS.add_subplot(gS[0, 0:2]), figM.add_subplot(gM[0, 1]), figS.add_subplot(gS[0, 2:4]), figS.add_subplot(gS[0, 4:6]),
+       figS.add_subplot(gS[1, 1:3]), figM.add_subplot(gM[1, 0]), figM.add_subplot(gM[1, 1]), figS.add_subplot(gS[1, 3:5])]
 fig = figM
 ax = axs[0]
 for c in ("XX", "QX", "QQ"): ax.hist(D[D.contact == c].w_min, bins=np.linspace(0, 1, 21), color=C[c], alpha=.55, label=LB[c], edgecolor="k", lw=.3)

@@ -78,7 +78,7 @@ fig = plt.figure(figsize=(7.2, 8.6)); gs = fig.add_gridspec(len(pick), 3, width_
 for r, idn in enumerate(pick):
     D_ = out[idn]; s = S.loc[idn]
     a0 = fig.add_subplot(gs[r, 0]); a0.imshow(D_["img"], extent=[-HZ * ASP, HZ * ASP, -HZ, HZ], aspect="equal", interpolation="lanczos")
-    a0.set_ylim(-HZ, HZ); a0.set_xticks([]); a0.set_ylabel("z (Å)"); a0.text(.04, .97, f"({'abc'[r]})", transform=a0.transAxes, va="top", fontweight="bold")
+    a0.set_ylim(-HZ, HZ); a0.set_xticks([]); a0.set_ylabel("z (Å)"); a0.text(-0.34, 1.0, 'abc'[r], transform=a0.transAxes, va="bottom", ha="left", fontweight="bold", fontsize=10)
     # bộ chỉ hướng a, b, c chiếu lên mặt phẳng ảnh (ngang = right, đứng = z)
     ox, oy, Lr = -HZ * ASP + 2.6, -HZ + 1.4, 1.4
     for vec, lab, c in ((D_["cell"][0], "a", "#C0392B"), (D_["cell"][1], "b", "#27AE60"), (np.array([0, 0, 1.]), "c", "#2F5DA8")):
