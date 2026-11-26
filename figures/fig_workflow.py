@@ -63,13 +63,13 @@ from matplotlib.patches import Polygon
 _TX = tuple((2.4 + k * 24.35, 2.4 + k * 24.35 + 22.4) for k in range(4))
 for k_ in range(3):
     xa_, xb_ = _TX[k_][1], _TX[k_ + 1][0]
-    W.add_patch(Polygon([(xa_ + .15, 66.1 - .9), (xb_ - .15, 66.1), (xa_ + .15, 66.1 + .9)], closed=True, fc=ARR, ec="none", zorder=6))
+    W.add_patch(FancyArrowPatch((xa_ - 2.2, 55.4), (xb_ + 2.2, 55.4), connectionstyle="arc3,rad=0.55", arrowstyle="-|>,head_length=4,head_width=2.5", lw=1.4, color=ARR, zorder=6))
 for x0_, x1_ in _TX:
     W.add_patch(FancyBboxPatch((x0_, 54.6), x1_ - x0_, 23.0, boxstyle="round,pad=0,rounding_size=0.8", fc="white", ec="#4B5563", lw=.7, zorder=1))
 # ---------- (a1) VESTA-like side view
 at = {a.info["name"]: a for a in read("../expand/S3.extxyz", ":") if a.info["name"] == "SeAlSnAs"}["SeAlSnAs"]
 c = at.cell; pos = at.positions; sym = at.get_chemical_symbols(); z0 = pos[:, 2].min()
-a1 = fig.add_axes([0.02, 0.66, 0.102, 0.27]); a1.axis("off"); a1.set_aspect("equal")
+a1 = fig.add_axes([0.03, 0.80, 0.20, 0.125]); a1.axis("off"); a1.set_aspect("equal")
 sc = at.repeat((4, 4, 1)); R = sc.positions.copy(); R[:, 0] -= c[0, 0] * 1.5 + c[1, 0] * 1.5; R[:, 1] -= c[1, 1] * 1.5; R[:, 2] -= z0; SY = sc.get_chemical_symbols()
 keep = (R[:, 1] > -0.2) & (R[:, 1] < c[1, 1] - 0.2) & (R[:, 0] > -0.6) & (R[:, 0] < 2 * c[0, 0] - 0.4)
 from scipy.spatial.distance import cdist
@@ -88,25 +88,25 @@ a1.text(c[0, 0] / 2, 6.3, "Q", ha="center", fontsize=9.4, fontweight="bold", col
 
 # ---------- (a2) face-resolved levels: Origin frame
 M = pd.read_csv("../res4/mono_strain.csv"); m0 = M[(M.name == "SeAlSnAs") & (M.strain == 0)].iloc[0]
-a2 = fig.add_axes([0.13, 0.680, 0.113, 0.232])
-FC = {"X": "#D9822B", "Q": "#C04A7A"}; XC = {"X": 0.0, "Q": 1.15}; hw = .28
+a2 = fig.add_axes([0.034, 0.664, 0.198, 0.132]); a2.axis("off")
+FC = {"X": "#D9822B", "Q": "#C04A7A"}; XC = {"X": 0.0, "Q": 1.7}; hw = .3
 from matplotlib.colors import to_rgb as _rgb
 def _t(c, f): r = np.array(_rgb(c)); return tuple(r + (1 - r) * f)
-a2.axhline(0, c="k", ls="--", lw=.7); a2.text(2.12, .12, r"$E_{vac}$", ha="right", va="bottom", fontsize=7.5)
+a2.plot([-1.0, 3.9], [0, 0], c="k", ls="--", lw=.7); a2.text(3.9, .25, r"$\mathrm{E_{vac}}$", ha="right", va="bottom", fontsize=7.5)
 for f in ("X", "Q"):
     x, vb, cb = XC[f], -m0[f"IP_{f}"], -m0[f"EA_{f}"]
-    a2.add_patch(Rectangle((x - hw, vb - .9), 2 * hw, .9, fc=FC[f], ec="k", lw=.4))
-    a2.add_patch(Rectangle((x - hw, cb), 2 * hw, .9, fc=_t(FC[f], .6), ec="k", lw=.4))
-    a2.plot([x - hw - .05, x + hw + .05], [(vb + cb) / 2] * 2, c=FC[f], lw=1.0)
+    a2.add_patch(Rectangle((x - hw, vb - 1.0), 2 * hw, 1.0, fc=FC[f], ec="k", lw=.4))
+    a2.add_patch(Rectangle((x - hw, cb), 2 * hw, 1.0, fc=_t(FC[f], .6), ec="k", lw=.4))
+    a2.plot([x - hw - .06, x + hw + .06], [(vb + cb) / 2] * 2, c=FC[f], lw=1.0)
+    a2.text(x, -6.75, f"{f} face", ha="center", va="top", fontsize=7.5)
 ar = dict(arrowstyle="<->", mutation_scale=5, lw=.6, shrinkA=0, shrinkB=0, color="k")
-a2.annotate("", xy=(-.45, -m0.IP_X), xytext=(-.45, 0), arrowprops=ar); a2.text(-.53, -m0.IP_X / 2, "IP", ha="right", va="center", fontsize=7.5)
-a2.annotate("", xy=(.45, -m0.EA_X), xytext=(.45, 0), arrowprops=ar); a2.text(.52, -m0.EA_X / 2, "EA", ha="left", va="center", fontsize=7.5)
+a2.annotate("", xy=(-.55, -m0.IP_X), xytext=(-.55, 0), arrowprops=ar); a2.text(-.63, -m0.IP_X / 2, "IP", ha="right", va="center", fontsize=7.5)
+a2.annotate("", xy=(.55, -m0.EA_X), xytext=(.55, 0), arrowprops=ar); a2.text(.63, -m0.EA_X / 2, "EA", ha="left", va="center", fontsize=7.5)
 emX, emQ = -(m0.IP_X + m0.EA_X) / 2, -(m0.IP_Q + m0.EA_Q) / 2
-a2.text(.72, emX - .1, r"$E_m$", ha="center", va="top", fontsize=7.5)
-a2.plot([XC["Q"] + hw + .05, 1.78], [emQ] * 2, c="k", lw=.4, ls=":", zorder=.5); a2.plot([XC["X"] + hw + .05, 1.78], [emX] * 2, c="k", lw=.4, ls=":", zorder=.5)
-a2.annotate("", xy=(1.72, emQ), xytext=(1.72, emX), arrowprops=ar); a2.text(1.98, (emX + emQ) / 2, r"$\Delta E_{vac}$", rotation=90, ha="center", va="center", fontsize=7.5)
-a2.set_xlim(-1.05, 2.25); a2.set_ylim(-6.6, .7); a2.set_xticks([0, 1.15]); a2.set_xticklabels(["X", "Q"])
-a2.set_yticks([]); a2.tick_params(axis="x", length=0)
+a2.text(.85, emX - .15, r"$\mathrm{E_m}$", ha="center", va="top", fontsize=7.5)
+a2.plot([XC["Q"] + hw + .06, 2.55], [emQ] * 2, c="k", lw=.4, ls=":", zorder=.5); a2.plot([XC["X"] + hw + .06, 2.55], [emX] * 2, c="k", lw=.4, ls=":", zorder=.5)
+a2.annotate("", xy=(2.5, emQ), xytext=(2.5, emX), arrowprops=ar); a2.text(2.62, (emX + emQ) / 2, r"$\mathrm{\Delta E_{vac}}$", ha="left", va="center", fontsize=7.5)
+a2.set_xlim(-1.0, 3.9); a2.set_ylim(-7.4, .9)
 
 # ---------- (a3) four contacts
 ROW = [("X", EL["Se"]), ("A", EL["Al"]), ("M", EL["Sn"]), ("Q", EL["As"])]
@@ -124,18 +124,23 @@ for i, nm in enumerate(("XX", "XQ", "QX", "QQ")):
     a3.text(i * 1.1 + .52, -.45, nm, ha="center", fontsize=8.5, fontweight="bold", color=INK)
 
 # ---------- (a4) database
-W.add_patch(Rectangle((81.65, 60.0), 10.0, 11.0, fc="#CFDDF0", ec="#2F5DA8", lw=.8))
-for yy in (60.0, 63.7, 67.4): W.add_patch(Ellipse((86.65, yy), 10.0, 2.4, fc="#CFDDF0", ec="#2F5DA8", lw=.8))
-W.add_patch(Ellipse((86.65, 71.0), 10.0, 2.4, fc="#A9C3E8", ec="#2F5DA8", lw=.8))
-W.text(86.65, 57.6, "DFT database (599)", ha="center", va="top", fontsize=7.8, color=INK)
+DBC = ["#2E4A7D", "#3E5F99", "#5277B5"]
+for k_, y_ in enumerate((59.6, 63.4, 67.2)):
+    col_ = DBC[k_]; side_ = _t(col_, .55)
+    W.add_patch(Rectangle((81.9, y_), 9.5, 3.0, fc=side_, ec=col_, lw=.8, zorder=2))
+    W.add_patch(Ellipse((86.65, y_), 9.5, 2.2, fc=side_, ec=col_, lw=.8, zorder=1.9))
+    W.add_patch(Ellipse((86.65, y_ + 3.0), 9.5, 2.2, fc=_t(col_, .25), ec=col_, lw=.8, zorder=2.1))
+    for dx_ in (-2.6, -1.4):
+        W.add_patch(Circle((86.65 + 3.4 + dx_ * 0 + (dx_ + 2.0), y_ + 1.4), .32, fc=col_, ec="none", zorder=2.2))
+W.text(86.65, 57.3, "DFT database (599)", ha="center", va="top", fontsize=7.8, color=INK)
 adb = fig.add_axes([64.2 / 100, 56.4 / 83.333, 10.8 / 100, 14.6 / 83.333]); adb.axis("off")
 # ---------- (a5) DFT potential: Origin frame
 a4 = fig.add_axes([0.552, 0.705, 0.175, 0.205]); z = np.linspace(0, 45, 600)
 V = 4.4 + .6 * np.tanh((z - 22.5) / .6) - 7 * (np.exp(-((z - 17) / 1.4) ** 2) + np.exp(-((z - 28) / 1.4) ** 2)) - 3.5 * (np.exp(-((z - 19.5) / .9) ** 2) + np.exp(-((z - 25.5) / .9) ** 2))
 V = V - 4.4 + .0
-a4.plot(z, V, c="#2E9E62", lw=1.0); a4.set_xlim(0, 45); a4.set_ylim(-8.5, 2.5); a4.minorticks_on()
+a4.plot(z, V, c="#2E9E62", lw=1.0); a4.set_xlim(0, 45); a4.set_ylim(-8.5, 3.2); a4.minorticks_on()
 a4.set_xlabel("z (Å)", fontsize=8.1, labelpad=1); a4.set_ylabel(r"$\bar V$ (eV)", fontsize=8.1, labelpad=1); a4.tick_params(labelsize=7.5, length=2.5)
-a4.plot([2, 41], [-.6, -.6], c="k", lw=.4, ls=":"); a4.annotate("", xy=(40, .6), xytext=(40, -.6), arrowprops=dict(arrowstyle="<->", lw=.6, shrinkA=0, shrinkB=0)); a4.text(29, 1.1, r"$\Delta\Phi_{bi}$", fontsize=7.5)
+a4.plot([1, 44], [-.6, -.6], c="k", lw=.4, ls=":"); a4.annotate("", xy=(41.5, .6), xytext=(41.5, -.6), arrowprops=dict(arrowstyle="<->", mutation_scale=5, lw=.6, shrinkA=0, shrinkB=0)); a4.text(40.3, .9, r"$\mathrm{\Delta\Phi_{bi}}$", ha="right", va="bottom", fontsize=7.5)
 
 # curved arrows (over / under alternating)
 pass  # connectors removed: curved((17.5, 76.61), (26.5, 76.61), -0.35); curved((36.8, 54.61), (43.5, 54.61), 0.45); curved((62.8, 72.61), (66.0, 70.11), -0.45); curved((73.5, 70.11), (79.5, 72.61), -0.45)
@@ -215,4 +220,4 @@ for k, (a, b) in enumerate(rows):
     if k % 2 == 0: W.add_patch(Rectangle((x0 + .3, yy - 1.3), w - .6, 2.6, fc="#F4EEF9", ec="none", zorder=4))
     W.text(x0 + .8, yy, a, fontsize=6.9, va="center", color=INK, zorder=5); W.text(x0 + w - .8, yy, b, fontsize=6.9, va="center", ha="right", color="#8E44AD" if k != 3 else MUTE, fontweight="bold", zorder=5)
 W.text(x0 + .8, y0 + 1.2, "*localized regime (CV 0.90)", fontsize=6.0, color=MUTE, va="center", zorder=5)
-_boldticks(fig); fig.savefig("fig0_workflow11.pdf"); fig.savefig("fig/fig0_workflow11.png", dpi=220)
+_boldticks(fig); fig.savefig("fig0_workflow12.pdf"); fig.savefig("fig/fig0_workflow12.png", dpi=220)
