@@ -154,7 +154,7 @@ W.text(86.65, 58.3, "599 of 832 with known type", ha="center", va="top", fontsiz
 for x_, t_, n_ in ((80.6, "I", 161), (86.65, "II", 369), (92.7, "III", 69)): W.text(x_, 55.9, f"{t_}: {n_}", ha="center", va="center", fontsize=7.2, color=TY[t_], fontweight="bold")
 adb = fig.add_axes([64.2 / 100, 56.4 / 83.333, 10.8 / 100, 14.6 / 83.333]); adb.axis("off")
 # ---------- (a5) DFT potential: Origin frame
-a4 = fig.add_axes([0.552, 0.705, 0.175, 0.205]); z = np.linspace(0, 45, 600)
+a4 = fig.add_axes([0.566, 0.712, 0.160, 0.198]); z = np.linspace(0, 45, 600)
 V = 4.4 + .6 * np.tanh((z - 22.5) / .6) - 7 * (np.exp(-((z - 17) / 1.4) ** 2) + np.exp(-((z - 28) / 1.4) ** 2)) - 3.5 * (np.exp(-((z - 19.5) / .9) ** 2) + np.exp(-((z - 25.5) / .9) ** 2))
 V = V - 4.4 + .0
 a4.plot(z, V, c="#2E9E62", lw=1.0); a4.set_xlim(0, 45); a4.set_ylim(-8.5, 3.2); a4.minorticks_on()
