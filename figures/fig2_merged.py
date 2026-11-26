@@ -127,5 +127,6 @@ ax.set_ylabel(r"$E_g^{layer}-E_g^{mono}$ (eV)", fontsize=10, fontweight="bold")
 fig.text(.005, .975, "a", fontweight="bold", fontsize=12)
 AX[1].text(-.16, 1.04, "b", transform=AX[1].transAxes, fontweight="bold", fontsize=12)
 for a, l_ in zip([AX[0], AX[2]], "ab"): a.text(-.2, 1.04, l_, transform=a.transAxes, fontweight="bold", fontsize=12)
-_boldticks(fig); fig.savefig("fig2_v2.pdf", bbox_inches="tight"); fig.savefig("fig/fig2_v2.png", bbox_inches="tight", dpi=200)
+_boldticks(fig); fig.savefig("fig2_merged.pdf", bbox_inches="tight"); fig.savefig("fig/fig2_merged.png", bbox_inches="tight", dpi=200)
 
+_boldticks(figS); figS.savefig("figS_dataset_gap.pdf", bbox_inches="tight")
