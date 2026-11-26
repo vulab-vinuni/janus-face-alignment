@@ -104,8 +104,12 @@ axs = [figM.add_subplot(gM[0, 0]), figS.add_subplot(gS[0, 0:2]), figM.add_subplo
        figS.add_subplot(gS[1, 1:3]), figM.add_subplot(gM[1, 0]), figM.add_subplot(gM[1, 1]), figS.add_subplot(gS[1, 3:5])]
 fig = figM
 ax = axs[0]
-for c in ("XX", "QX", "QQ"): ax.hist(D[D.contact == c].w_min, bins=np.linspace(0, 1, 21), color=C[c], alpha=.55, label=LB[c], edgecolor="k", lw=.3)
-ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 60)); ax.legend(loc="upper right", fontsize=8.0)
+CA = {"XX": "#2F6DB5", "QX": "#D46A9F", "QQ": "#404040"}
+for c in ("XX", "QX", "QQ"):
+    v = D[D.contact == c].w_min; ax.hist(v, bins=np.linspace(0, 1, 21), color=CA[c], alpha=.13, lw=0)
+    ax.hist(v, bins=np.linspace(0, 1, 21), histtype="step", color=CA[c], lw=1.4, label=f"{LB[c]}  (median {v.median():.2f})")
+    ax.axvline(v.median(), color=CA[c], ls="--", lw=.9, ymax=.9)
+ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 62), xlim=(0, 1)); ax.legend(loc="upper right", fontsize=8.0, handlelength=1.4, frameon=False)
 th = np.arange(0, .86, .05); ax = axs[1]
 ax.plot(th, [np.abs(D.vbo_dft - D.vbo_and)[D.w_min >= t].mean() for t in th], "s-", c="#7F7F7F", ms=3, mfc="w", label="Anderson")
 ax.plot(th, [np.abs(D.vbo_dft - D.vbo_glr)[D.w_min >= t].mean() for t in th], "o-", c="k", ms=3, label="S(contact) model")
@@ -113,8 +117,10 @@ ax.set(xlabel=r"$w_{min}$ threshold", ylabel="VBO MAE (eV)", ylim=(0, .4)); ax.l
 ax = axs[2]; bins = [0, .1, .3, .5, .7, 1.01]; acc, cnt_, lb = [], [], []
 for lo, hi in zip(bins[:-1], bins[1:]):
     s = D[(D.p_local >= lo) & (D.p_local < hi)]; acc.append((s.type_glr == s.type_dft).mean()); cnt_.append(len(s)); lb.append(f"{lo:.1f}–{min(hi, 1):.1f}")
-ax.bar(range(5), acc, .65, color="#9DB7DA", edgecolor="k", lw=.5)
-for j, (a_, n_) in enumerate(zip(acc, cnt_)): ax.text(j, a_ + .02, n_, ha="center", fontsize=8)
+import matplotlib.cm as _cm
+ax.bar(range(5), acc, .65, color=[_cm.Greens(v) for v in np.linspace(.3, .85, 5)], edgecolor="none")
+for j, (a_, n_) in enumerate(zip(acc, cnt_)): ax.text(j, a_ + .02, f"{a_:.2f}", ha="center", fontsize=8); ax.text(j, .03, f"n = {n_}", ha="center", fontsize=7, color="white" if j > 1 else "k")
+ax.axhline((T.type_dft == "II").mean(), c="k", ls="--", lw=.8, label=f"always type II ({(T.type_dft == 'II').mean():.2f})"); ax.legend(loc="upper left", frameon=False, handlelength=1.6)
 ax.set_xticks(range(5)); ax.set_xticklabels(lb, rotation=35, fontsize=8); nomx(ax); ax.set(ylim=(0, 1.12), xlabel=r"predicted P($w_{min}\geq0.6$)", ylabel="type accuracy")
 ax = axs[3]
 for c in ("XX", "QX", "QQ"):
@@ -137,10 +143,10 @@ for j, k in enumerate(ks): ax.text(j, J[k]["NA"] + J[k].get("NA_sd", 0) + .02, f
 ax.axhline(.5, c="k", ls=":", lw=.7); ax.set_xticks(range(5)); ax.set_xticklabels(nm, rotation=30, fontsize=8); nomx(ax); ax.set(ylim=(0, 1.32), ylabel="Balanced accuracy"); ax.set_yticks(np.arange(0, 1.01, .2))
 from matplotlib.patches import Patch; ax.legend([Patch(fc="#A9D3C4", ec="k", lw=.5), Patch(fc="#2A8C6E", ec="k", lw=.5)], ["physical model", "SVM classifier"], loc="upper left", fontsize=8.0, ncol=1, handlelength=1.2, columnspacing=.8, borderaxespad=.25)
 # ---- row 3: confidence-resolved alignment map of the lattice-matched interfaces (former Fig. 6)
-TTY = {"I": "#7E3BA8", "II": "#F08C1E", "III": "#1FB0CC"}            # same type colours as Fig. 2
+TTY = {"I": "#7B3FA0", "II": "#12938F", "III": "#A61B1B"}            # same type colours as Fig. 2
 A = pd.read_csv("pred7796_hyb.csv"); A = A[(A.Eg1 > .05) & (A.Eg2 > .05)]
 ax = axs[6]; Al = A[A.p_local >= .3]; Ah = A[A.p_local < .3]
-ax.scatter(Ah.dE.abs(), Ah.Eg1 + Ah.Eg2, s=1.5, c="#D0D0D0", lw=0, label="hybridized")
+ax.scatter(Ah.dE.abs(), Ah.Eg1 + Ah.Eg2, s=1.5, c="#E8B931", alpha=.5, lw=0, label="hybridized")
 for t in ("I", "II", "III"):
     d = Al[Al.type_hyb == t]; ax.scatter(d.dE.abs(), d.Eg1 + d.Eg2, s=3, c=TTY[t], lw=0, label=f"type {t}")
 ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$E_{g,1}+E_{g,2}$ (eV)", xlim=(0, 2.5), ylim=(0, 7.4)); ax.set_yticks(range(0, 6))
@@ -155,9 +161,11 @@ for k, (G, col, nm) in enumerate([(T, "type_dft", "DFT"), (Ac, "type_hyb", "pred
     x = np.arange(3) + (k - .5) * (w + .04); bot = np.zeros(3)
     for t in ("I", "II", "III"): ax.bar(x, fr[t], w, bottom=bot, color=TTY[t], edgecolor="k", lw=.5, hatch=None if k == 0 else "////", alpha=1 if k == 0 else .85); bot += fr[t].values
     if k == 1: ax.text(x[2], 1.015, f"n={n.iloc[2]}", ha="center", fontsize=6.5, va="bottom")
-ax.set_xticks(range(3)); ax.set_xticklabels(["XX", "XQ", "QQ"]); nomx(ax); ax.set(ylim=(0, 1.25), ylabel="type fraction"); ax.set_yticks(np.arange(0, 1.01, .2))
+ax.set_xticks(range(3)); ax.set_xticklabels(["XX", "XQ", "QQ"]); nomx(ax); ax.set(ylim=(0, 1.3), ylabel="type fraction"); ax.set_yticks(np.arange(0, 1.01, .2))
 from matplotlib.patches import Patch
-ax.legend(handles=[Patch(fc="w", ec="k", lw=.5, label="DFT (599)"), Patch(fc="w", ec="k", lw=.5, hatch="////", label="confident pred.")], loc="upper center", ncol=2, fontsize=6.6, bbox_to_anchor=(.5, 1.01), handlelength=1.2, columnspacing=.6, borderaxespad=.1)
+_h = [Patch(fc=TTY["I"], ec="none", label="type I"), Patch(fc="w", ec="k", lw=.5, label="DFT (599)"), Patch(fc=TTY["II"], ec="none", label="type II"),
+      Patch(fc="w", ec="k", lw=.5, hatch="////", label=f"confident ({len(Ac):,})".replace(",", " ")), Patch(fc=TTY["III"], ec="none", label="type III")]
+ax.legend(handles=_h, loc="upper center", ncol=3, fontsize=7, bbox_to_anchor=(.5, 1.0), handlelength=1.3, handleheight=.9, columnspacing=1.0, borderaxespad=.2, frameon=False)
 ax = axs[8]; A["pair"] = ["|".join(sorted([a, b])) for a, b in zip(A.L1, A.L2)]; nt = A.groupby("pair").type_hyb.nunique()
 Ac = A[A.conf]; g = Ac.groupby("pair"); ntc = g.type_hyb.nunique()[g.size() >= 2]
 vals = [(nt == k).sum() for k in (1, 2, 3)]; valc = [(ntc == k).sum() for k in (1, 2, 3)]; print("pairs conf>=2", len(ntc), valc)
