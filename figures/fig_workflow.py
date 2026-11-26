@@ -82,14 +82,25 @@ a1.text(c[0, 0] / 2, 6.3, "Q", ha="center", fontsize=9.4, fontweight="bold", col
 
 # ---------- (a2) face-resolved levels: Origin frame
 M = pd.read_csv("../res4/mono_strain.csv"); m0 = M[(M.name == "SeAlSnAs") & (M.strain == 0)].iloc[0]
-a2 = fig.add_axes([0.26, 0.6658, 0.125, 0.2295])
-for k, f in enumerate(("X", "Q")):
-    vb, cb = -m0[f"IP_{f}"], -m0[f"EA_{f}"]
-    a2.add_patch(Rectangle((k - .3, vb - 1.2), .6, 1.2, fc="#9DB7DA", ec="k", lw=.4)); a2.add_patch(Rectangle((k - .3, cb), .6, 1.2, fc="#F4C6A5", ec="k", lw=.4))
-    a2.plot([k - .38, k + .38], [(vb + cb) / 2] * 2, c="k", ls="--", lw=.6)
-a2.set_xlim(-.6, 2.0); a2.set_ylim(-6.6, -2.6); a2.set_xticks([0, 1]); a2.set_xticklabels(["X", "Q"]); a2.tick_params(axis="x", which="both", top=False)
-a2.set_ylabel(r"E − E$_{vac}$ (eV)", fontsize=8.1, labelpad=1); a2.tick_params(labelsize=7.5, length=2.5); a2.minorticks_on(); a2.tick_params(axis="x", which="minor", bottom=False, top=False)
-a2.annotate("", xy=(1.45, -m0.IP_Q), xytext=(1.45, -m0.IP_X), arrowprops=dict(arrowstyle="<->", lw=.6)); a2.text(1.75, (-m0.IP_Q - m0.IP_X) / 2, r"$\Delta E_{vac}$", fontsize=7.5, rotation=90, va="center", ha="center")
+a2 = fig.add_axes([0.255, 0.655, 0.145, 0.252])
+FC = {"X": "#D9822B", "Q": "#C04A7A"}; XC = {"X": 0.0, "Q": 1.15}; hw = .28
+from matplotlib.colors import to_rgb as _rgb
+def _t(c, f): r = np.array(_rgb(c)); return tuple(r + (1 - r) * f)
+a2.axhline(0, c="k", ls="--", lw=.7); a2.text(2.12, .12, r"$E_{vac}$", ha="right", va="bottom", fontsize=7.5)
+for f in ("X", "Q"):
+    x, vb, cb = XC[f], -m0[f"IP_{f}"], -m0[f"EA_{f}"]
+    a2.add_patch(Rectangle((x - hw, vb - .9), 2 * hw, .9, fc=FC[f], ec="k", lw=.4))
+    a2.add_patch(Rectangle((x - hw, cb), 2 * hw, .9, fc=_t(FC[f], .6), ec="k", lw=.4))
+    a2.plot([x - hw - .05, x + hw + .05], [(vb + cb) / 2] * 2, c=FC[f], lw=1.0)
+ar = dict(arrowstyle="<->", mutation_scale=5, lw=.6, shrinkA=0, shrinkB=0, color="k")
+a2.annotate("", xy=(-.45, -m0.IP_X), xytext=(-.45, 0), arrowprops=ar); a2.text(-.53, -m0.IP_X / 2, "IP", ha="right", va="center", fontsize=7.5)
+a2.annotate("", xy=(.45, -m0.EA_X), xytext=(.45, 0), arrowprops=ar); a2.text(.52, -m0.EA_X / 2, "EA", ha="left", va="center", fontsize=7.5)
+emX, emQ = -(m0.IP_X + m0.EA_X) / 2, -(m0.IP_Q + m0.EA_Q) / 2
+a2.text(.72, emX - .1, r"$E_m$", ha="center", va="top", fontsize=7.5)
+a2.plot([XC["Q"] + hw + .05, 1.78], [emQ] * 2, c="k", lw=.4, ls=":", zorder=.5); a2.plot([XC["X"] + hw + .05, 1.78], [emX] * 2, c="k", lw=.4, ls=":", zorder=.5)
+a2.annotate("", xy=(1.72, emQ), xytext=(1.72, emX), arrowprops=ar); a2.text(1.98, (emX + emQ) / 2, r"$\Delta E_{vac}$", rotation=90, ha="center", va="center", fontsize=7.5)
+a2.set_xlim(-.95, 2.2); a2.set_ylim(-6.6, .7); a2.set_yticks([-6, -4, -2, 0]); a2.set_xticks([0, 1.15]); a2.set_xticklabels(["X face", "Q face"])
+a2.set_ylabel("Energy (eV)", fontsize=8.1, labelpad=1); a2.tick_params(axis="x", length=0)
 
 # ---------- (a3) four contacts
 ROW = [("X", EL["Se"]), ("A", EL["Al"]), ("M", EL["Sn"]), ("Q", EL["As"])]
@@ -198,4 +209,4 @@ for k, (a, b) in enumerate(rows):
     if k % 2 == 0: W.add_patch(Rectangle((x0 + .3, yy - 1.3), w - .6, 2.6, fc="#F4EEF9", ec="none", zorder=4))
     W.text(x0 + .8, yy, a, fontsize=6.9, va="center", color=INK, zorder=5); W.text(x0 + w - .8, yy, b, fontsize=6.9, va="center", ha="right", color="#8E44AD" if k != 3 else MUTE, fontweight="bold", zorder=5)
 W.text(x0 + .8, y0 + 1.2, "*localized regime (CV 0.90)", fontsize=6.0, color=MUTE, va="center", zorder=5)
-_boldticks(fig); fig.savefig("fig0_workflow9.pdf"); fig.savefig("fig/fig0_workflow9.png", dpi=220)
+_boldticks(fig); fig.savefig("fig0_workflow10.pdf"); fig.savefig("fig/fig0_workflow10.png", dpi=220)
