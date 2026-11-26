@@ -1,0 +1,22 @@
+# Output of ana_het6.py on Taiwania (2026-11-26). err = monolayer-derived minus direct (eV); m = type margin (eV).
+# H00877 and H03913 computed with SIGMA = 0.05 eV and ALGO = Damped, TIME = 0.2 (INCAR.*_m); the others with the default INCARs.
+                          H03752   H10072   H00877   H03913   H00855   H23023
+L1                       SAlSnAs  SInGeSb  SAlGeSb  SAlSnAs  SAlGeSb  TeInPbP
+L2                       SGaSnAs  TeGaPbP  SAlSnAs  SeInGeP  SAlPbAs  TeInSnP
+dPhi_bi_pbe               -0.456    1.105   -0.727   -0.629   -0.202    0.055
+dPhi_bi_hse               -0.754    1.165   -1.178   -1.031   -0.276    0.067
+err_VBM1                  -0.077    0.100   -0.234   -0.236   -0.145   -0.139
+err_CBM1                   0.038    0.092   -0.082    0.035   -0.106    0.068
+err_VBM2                   0.217    0.007    0.116    0.065   -0.242   -0.231
+err_CBM2                   0.197    0.110    0.189    0.359   -0.046    0.042
+type_pbe (m)          III(0.013) II(0.382) III(0.151) III(0.233) II(0.015) III(0.221)
+type_hse_direct (m)    II(0.264) II(0.391) III(0.051) III(0.185) II(0.194)  II(0.054)
+type_hse_mono (m)      II(0.486) II(0.409)  II(0.346)  II(0.410) II(0.291)  II(0.128)
+err_soc_VBM1                 -      0.085   -0.334        -        -      0.043
+err_soc_CBM1                 -      0.088   -0.107        -        -      0.072
+err_soc_VBM2                 -      0.251    0.144        -        -     -0.041
+err_soc_CBM2                 -      0.102    0.235        -        -      1.427 (CB edges shared between layers)
+type_hsesoc_direct (m)       -  II(0.395) III(0.386)       -        -   III(0.0, ill-defined)
+type_hsesoc_mono (m)         -  II(0.409)  II(0.183)       -        -    II(0.032)
+dPhi_bi_hsesoc               -      1.169   -1.326        -        -      0.089
+Summary: HSE06 |err| median 0.108, max 0.359 eV; type unchanged 4/6; dPhi_bi change PBE->HSE06 up to 0.452 eV.
