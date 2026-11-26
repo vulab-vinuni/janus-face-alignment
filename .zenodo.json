@@ -1,0 +1,17 @@
+{
+  "title": "Data and code for: The contact face shapes band alignment and its predictability in Janus van der Waals heterostructures",
+  "upload_type": "dataset",
+  "description": "<p>Data and code accompanying the manuscript <i>The contact face shapes band alignment and its predictability in Janus van der Waals heterostructures</i> (submitted to Nature Communications).</p><p>Contents: relaxed structures, face-resolved band edges and vacuum-level steps of 108 Janus X–A–M–Q monolayers on a biaxial strain grid; formation energies; DFT (PBE+D3(BJ)) geometries, layer-resolved band edges, band-edge layer weights and electrostatic interface dipoles of 832 heterostructures (599 in the fitting set); HSE06 and HSE06+SOC checks on monolayers and on six heterostructures; the contact-resolved linear-response model, its machine-learned correction and the localization classifier; blind-test predictions recorded before the DFT calculations; the predicted alignment map of 7 796 lattice-matched interfaces; the pre-registered transfer test; the relaxed structures and basic properties of a database of 1 328 Janus monolayers; the fine-tuned MACE model; and the scripts used to build the descriptors, fit the models and generate the figures.</p>",
+  "creators": [
+    {"name": "Vuong, Khiet An", "affiliation": "Center for Materials Innovation and Technology (CMIT), VinUniversity, Hanoi, Vietnam"},
+    {"name": "Vo, Khuong Dien", "affiliation": "Can Tho University, Can Tho, Vietnam"},
+    {"name": "Vu, Minh Canh", "affiliation": "Center for Materials Innovation and Technology (CMIT) and College of Engineering and Computer Science, VinUniversity, Hanoi, Vietnam"}
+  ],
+  "keywords": ["Janus monolayers", "van der Waals heterostructures", "band alignment", "interface dipole", "density functional theory", "machine learning", "high-throughput"],
+  "license": "MIT",
+  "access_right": "open",
+  "language": "eng",
+  "related_identifiers": [
+    {"identifier": "https://github.com/vulab-vinuni/janus-face-alignment", "relation": "isSupplementTo", "resource_type": "software"}
+  ]
+}

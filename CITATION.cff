@@ -1,0 +1,17 @@
+cff-version: 1.2.0
+message: "If you use these data or code, please cite the article and this archive."
+title: "Data and code for: The contact face shapes band alignment and its predictability in Janus van der Waals heterostructures"
+type: dataset
+license: MIT
+repository-code: "https://github.com/vulab-vinuni/janus-face-alignment"
+authors:
+  - family-names: Vuong
+    given-names: Khiet An
+    affiliation: "Center for Materials Innovation and Technology (CMIT), VinUniversity, Hanoi, Vietnam"
+  - family-names: Vo
+    given-names: Khuong Dien
+    affiliation: "Can Tho University, Can Tho, Vietnam"
+  - family-names: Vu
+    given-names: Minh Canh
+    affiliation: "CMIT and College of Engineering and Computer Science, VinUniversity, Hanoi, Vietnam"
+keywords: [Janus monolayers, van der Waals heterostructures, band alignment, interface dipole, DFT, machine learning]
