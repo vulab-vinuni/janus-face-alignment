@@ -22,7 +22,7 @@ for k, nm in enumerate(REP):
     a._plab = "abcd"[k]
     p = np.load(f"{R}phonons/bands/{nm}.npz"); x, w, z = p["x"], p["w"], p["zfrac"]
     b = fig.add_subplot(gs[1, k]); b.axhline(0, c="k", lw=.5, ls=":")
-    for j in range(w.shape[1]): b.plot(x, w[:, j], color="#1b4f8a" if j else "#c8302a", lw=.8)
+    for j in range(w.shape[1]): b.plot(x, w[:, j], color="#1b4f8a" if j else "#c8302a", lw=1.5)
     xt = [x[0], x[80], x[160], x[-1]]
     for v in xt[1:-1]: b.axvline(v, color="0.75", lw=.5)
     b.set_xticks(xt); b.set_xticklabels(["Γ", "M", "K", "Γ"]); b.set_xlim(x[0], x[-1]); b.set_ylim(-25, 350)
