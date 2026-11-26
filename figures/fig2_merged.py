@@ -4,9 +4,9 @@ from matplotlib.patches import Rectangle, FancyBboxPatch
 from matplotlib.colors import to_rgb
 plt.rcParams.update({"font.family":"DejaVu Sans","font.size":10,"axes.linewidth":1,"xtick.direction":"in","ytick.direction":"in","ytick.right":True,"mathtext.fontset":"cm"})
 tint = lambda c, f: tuple(np.array(to_rgb(c)) + (1 - np.array(to_rgb(c))) * f)
-ROW = {"X": "#E3C02A", "A": "#6F9FD8", "M": "#4F4F6F", "Q": "#C04A7A"}
-CC = {"XX": "#1F4E9C", "XQ": "#14946A", "QX": "#14946A", "QQ": "#C0392B"}
-TT = {"I": "#7E3BA8", "II": "#F08C1E", "III": "#1FB0CC"}; TN = {"I": "straddling", "II": "staggered", "III": "broken gap"}
+ROW = {"X": "#E8C547", "A": "#8DC26F", "M": "#8C6D46", "Q": "#D46A9F"}
+CC = {"XX": "k", "XQ": "k", "QX": "k", "QQ": "k"}
+TT = {"I": "#7B3FA0", "II": "#12938F", "III": "#A61B1B"}; TN = {"I": "straddling", "II": "staggered", "III": "broken gap"}
 L1C, L2C = "#2B5BA8", "#D9661F"
 T = pd.read_csv("train_oof.csv"); T["pair"] = ["|".join(sorted([a, b])) for a, b in zip(T.L1, T.L2)]
 P = T[T.pair == "SeAlSnAs|TeGaGeP"].copy(); P["lab"] = P.f1 + P.f2; P = P.set_index("lab").loc[["XX", "XQ", "QX", "QQ"]]
@@ -35,7 +35,8 @@ for i, (lb, r) in enumerate(P.iterrows()):
         ax.add_patch(Rectangle((x0, v - .75), .26, .75, fc=col, ec=col, lw=.8))
         ax.add_patch(Rectangle((x0, c), .26, .75, fc=tint(col, .62), ec=col, lw=1.0))
     vb = max(r.VBM1, r.VBM2); cb = min(r.CBM1, r.CBM2)
-    ax.axhspan(min(vb, cb), max(vb, cb), xmin=.06, xmax=.94, color=TT[r.type_dft], alpha=.18, lw=0)
+    import matplotlib as _mpl; _mpl.rcParams["hatch.linewidth"] = .5
+    ax.add_patch(Rectangle((.06, min(vb, cb)), .88, abs(cb - vb), fc="none", ec=TT[r.type_dft], hatch="//////", lw=0, zorder=1))
     ax.plot([.06, .94], [vb, vb], c="k", lw=.6, ls="--"); ax.plot([.06, .94], [cb, cb], c="k", lw=.6, ls="--")
     ax.text(.5, -2.47, r.type_dft, ha="center", va="center", fontsize=15, family="DejaVu Serif", fontweight="bold", color=TT[r.type_dft])
     ax.text(.5, -2.72, TN[r.type_dft], ha="center", va="center", fontsize=9.5, color=TT[r.type_dft])
@@ -46,8 +47,8 @@ for i, (lb, r) in enumerate(P.iterrows()):
         for t in ax.get_yticklabels(): t.set_fontweight("bold"); t.set_fontsize(10)
     else: ax.set_yticklabels([])
 from matplotlib.patches import Patch
-fig.legend([Patch(fc=ROW[e]) for e in "XAMQ"] + [Patch(fc=L1C), Patch(fc=L2C), Patch(fc="white", ec="k", lw=.6), Patch(fc="0.55")],
-           ["X (S, Se, Te)", "A (Al, Ga, In)", "M (Si–Pb)", "Q (P, As, Sb)", "SeAlSnAs", "TeGaGeP", "CB (light)", "VB (solid)"],
+fig.legend([Patch(fc=ROW[e]) for e in "XAMQ"] + [Patch(fc=L1C), Patch(fc=L2C), Patch(fc=tint(L1C, .62), ec=L1C, lw=.8), Patch(fc=L1C, ec=L1C)],
+           ["X (S, Se, Te)", "A (Al, Ga, In)", "M (Si–Pb)", "Q (P, As, Sb)", "SeAlSnAs", "TeGaGeP", "CB (light fill)", "VB (solid fill)"],
            loc="lower left", ncol=2, frameon=False, fontsize=10, bbox_to_anchor=(.07, .035), handlelength=2.0, handleheight=1.2, columnspacing=1.6, labelspacing=.55)
 
 
@@ -108,7 +109,7 @@ for p, g in T[T.pair.isin(m_.pair)].groupby("pair"):
         for j in range(i + 1, len(v)):
             x.append(abs(v[i] - v[j])); (xd_ if tt[i] != tt[j] else xs_).append(abs(v[i] - v[j]))
 sw = m_.groupby("pair").type_dft.nunique() > 1
-ax = AX[1]; ax.hist([xs_, xd_], bins=np.linspace(0, 2, 21), stacked=True, color=["#9DB7DA", "#E07B39"], edgecolor="white", lw=.7, label=["same type", "type changes"]); ax.axvline(np.median(x), c="k", ls="--", lw=.8)
+ax = AX[1]; ax.hist([xs_, xd_], bins=np.linspace(0, 2, 21), stacked=True, color=["#C8C8C8", "#1A1A1A"], edgecolor="white", lw=.7, label=["same type", "type changes"]); ax.axvline(np.median(x), c="k", ls="--", lw=.8)
 ax.legend(loc="center right", frameon=False, handlelength=1.0, handleheight=.9, borderaxespad=.3)
 ax.set_xlabel(r"|$\Delta$VBO| between faces (eV)", fontsize=10, fontweight="bold"); ax.set_ylabel("face pairs", fontsize=10, fontweight="bold")
 ax.text(.97, .95, f"{sw.sum()}/{len(sw)} pairs switch type", transform=ax.transAxes, ha="right", va="top", fontsize=8); ax.text(np.median(x) + .03, ax.get_ylim()[1] * .93, f"median {np.median(x):.2f} eV", ha="left", va="top", fontsize=8)
@@ -128,5 +129,6 @@ fig.text(.005, .975, "a", fontweight="bold", fontsize=12)
 AX[1].text(-.16, 1.04, "b", transform=AX[1].transAxes, fontweight="bold", fontsize=12)
 for a, l_ in zip([AX[0], AX[2]], "ab"): a.text(-.2, 1.04, l_, transform=a.transAxes, fontweight="bold", fontsize=12)
 _boldticks(fig); fig.savefig("fig2_merged.pdf", bbox_inches="tight"); fig.savefig("fig/fig2_merged.png", bbox_inches="tight", dpi=200)
+
 
 _boldticks(figS); figS.savefig("figS_dataset_gap.pdf", bbox_inches="tight")
