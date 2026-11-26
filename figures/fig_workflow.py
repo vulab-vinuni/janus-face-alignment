@@ -60,10 +60,21 @@ def bond(ax, p, q, c1, c2):
 panel(38.5, 43.33, "a", "Data generation: monolayers, interfaces and DFT heterostructures")
 panel(1.5, 35.5, "b", "Regression models fitted on the 599 interfaces, frozen, then tested")
 from matplotlib.patches import Polygon
+def _swoosh(p0, p1, sag, col="#E07B1F", w0=.12, w1=1.05, hl=1.5, hw=1.35):
+    p0, p1 = np.array(p0, float), np.array(p1, float); m = (p0 + p1) / 2 + np.array([0, sag])
+    t = np.linspace(0, 1, 60)[:, None]; P = (1 - t) ** 2 * p0 + 2 * (1 - t) * t * m + t ** 2 * p1
+    d = np.gradient(P, axis=0); d /= np.linalg.norm(d, axis=1)[:, None]; nrm = np.c_[-d[:, 1], d[:, 0]]
+    wd = (w0 + (w1 - w0) * t[:, 0] ** 1.3)[:, None] / 2
+    end = P[-1] - d[-1] * hl; k = np.argmin(np.linalg.norm(P - end, axis=1)); Pc, nc, wc = P[:k + 1], nrm[:k + 1], wd[:k + 1]
+    L, Rr = Pc + nc * wc, Pc - nc * wc; tip = P[-1] + d[-1] * .2
+    head = [Pc[-1] + nc[-1] * hw, tip, Pc[-1] - nc[-1] * hw]
+    W.add_patch(Polygon(list(L) + head + list(Rr[::-1]), closed=True, fc=col, ec="none", zorder=6))
+    hi = Pc + nc * wc * .45; lo = Pc + nc * wc * .05; sel = slice(int(.25 * len(Pc)), len(Pc))
+    W.add_patch(Polygon(list(hi[sel]) + list(lo[sel][::-1]), closed=True, fc="white", alpha=.45, ec="none", zorder=6.1))
 _TX = tuple((2.4 + k * 24.35, 2.4 + k * 24.35 + 22.4) for k in range(4))
 for k_ in range(3):
     xa_, xb_ = _TX[k_][1], _TX[k_ + 1][0]
-    W.add_patch(FancyArrowPatch((xa_ - 2.2, 55.4), (xb_ + 2.2, 55.4), connectionstyle="arc3,rad=0.55", arrowstyle="-|>,head_length=4,head_width=2.5", lw=1.4, color=ARR, zorder=6))
+    _swoosh((xa_ - 2.8, 55.9), (xb_ + 2.4, 56.2), -2.6)
 for x0_, x1_ in _TX:
     W.add_patch(FancyBboxPatch((x0_, 54.6), x1_ - x0_, 23.0, boxstyle="round,pad=0,rounding_size=0.8", fc="white", ec="#4B5563", lw=.7, zorder=1))
 # ---------- (a1) VESTA-like side view
