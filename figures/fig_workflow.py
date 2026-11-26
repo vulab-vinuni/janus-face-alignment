@@ -38,7 +38,7 @@ def _boldticks(fig):
 INK, MUTE, ARR = "k", "k", "#E8A86B"
 EL = {"Se": "#E08E2B", "Al": "#6F9FD8", "Sn": "#4F4F6F", "As": "#C04A7A"}   # trùng màu X/A/M/Q của Hình 2a   # màu kiểu VESTA (Se vàng-lục, As tím)
 RAD = {"Se": .55, "Al": .48, "Sn": .62, "As": .55}
-TY = {"I": "#4C72B0", "II": "#DD8452", "III": "#8172B3"}
+TY = {"I": "#7B3FA0", "II": "#12938F", "III": "#A61B1B"}
 fig = plt.figure(figsize=(7.2, 6.0)); W = fig.add_axes([0, 0, 1, 1]); W.set_xlim(0, 100); W.set_ylim(0, 83.333); W.axis("off")
 def panel(y0, h, lab, title):
     W.add_patch(FancyBboxPatch((1, y0), 98, h, boxstyle="round,pad=0,rounding_size=1.5", fc="#FAFBFC", ec="#8A94A6", lw=.9, ls=(0, (4, 3)), zorder=0))
@@ -89,24 +89,23 @@ a1.text(c[0, 0] / 2, 6.3, "Q", ha="center", fontsize=9.4, fontweight="bold", col
 # ---------- (a2) face-resolved levels: Origin frame
 M = pd.read_csv("../res4/mono_strain.csv"); m0 = M[(M.name == "SeAlSnAs") & (M.strain == 0)].iloc[0]
 a2 = fig.add_axes([0.034, 0.668, 0.198, 0.252]); a2.axis("off")
-FC = {"X": "#D9822B", "Q": "#C04A7A"}; XC = {"X": 0.0, "Q": 1.7}; hw = .3
 from matplotlib.colors import to_rgb as _rgb
 def _t(c, f): r = np.array(_rgb(c)); return tuple(r + (1 - r) * f)
-a2.plot([-1.0, 3.9], [0, 0], c="k", ls="--", lw=.7); a2.text(3.9, .25, r"$\mathrm{E_{vac}}$", ha="right", va="bottom", fontsize=7.5)
-for f in ("X", "Q"):
-    x, vb, cb = XC[f], -m0[f"IP_{f}"], -m0[f"EA_{f}"]
-    a2.add_patch(Rectangle((x - hw, vb - 1.0), 2 * hw, 1.0, fc=FC[f], ec="k", lw=.4))
-    a2.add_patch(Rectangle((x - hw, cb), 2 * hw, 1.0, fc=_t(FC[f], .6), ec="k", lw=.4))
-    a2.plot([x - hw - .06, x + hw + .06], [(vb + cb) / 2] * 2, c=FC[f], lw=1.0)
-    a2.text(x, -6.75, f"{f} face", ha="center", va="top", fontsize=7.5)
+cX, cQ, LC = "#D9822B", "#C04A7A", "#4A5D7E"
+dV = m0.IP_Q - m0.IP_X; vbm, cbm = -m0.IP_X, -m0.EA_X; L0, L1 = 1.5, 2.3
+a2.add_patch(Rectangle((L0, vbm - 1.1), L1 - L0, 1.1, fc=LC, ec="k", lw=.4)); a2.add_patch(Rectangle((L0, cbm), L1 - L0, 1.1, fc=_t(LC, .6), ec="k", lw=.4))
+a2.plot([L0 - .05, L1 + .05], [(vbm + cbm) / 2] * 2, c="k", lw=.8); a2.text(L0 - .1, (vbm + cbm) / 2, r"$\mathrm{E_m}$", ha="right", va="center", fontsize=7.5)
+a2.text((L0 + L1) / 2, vbm - 1.35, "monolayer", ha="center", va="top", fontsize=7.5)
+a2.plot([-.35, L0], [0, 0], c=cX, ls="--", lw=.9); a2.text(-.35, -.2, r"$\mathrm{E_{vac,X}}$", ha="left", va="top", fontsize=7.5, color=cX)
+a2.plot([L1, 4.15], [dV, dV], c=cQ, ls="--", lw=.9); a2.text(3.0, dV + .2, r"$\mathrm{E_{vac,Q}}$", ha="center", va="bottom", fontsize=7.5, color=cQ)
 ar = dict(arrowstyle="<->", mutation_scale=5, lw=.6, shrinkA=0, shrinkB=0, color="k")
-a2.annotate("", xy=(-.55, -m0.IP_X), xytext=(-.55, 0), arrowprops=ar); a2.text(-.63, -m0.IP_X / 2, "IP", ha="right", va="center", fontsize=7.5)
-a2.annotate("", xy=(.55, -m0.EA_X), xytext=(.55, 0), arrowprops=ar); a2.text(.63, -m0.EA_X / 2, "EA", ha="left", va="center", fontsize=7.5)
-emX, emQ = -(m0.IP_X + m0.EA_X) / 2, -(m0.IP_Q + m0.EA_Q) / 2
-a2.text(.85, emX - .15, r"$\mathrm{E_m}$", ha="center", va="top", fontsize=7.5)
-a2.plot([XC["Q"] + hw + .06, 2.55], [emQ] * 2, c="k", lw=.4, ls=":", zorder=.5); a2.plot([XC["X"] + hw + .06, 2.55], [emX] * 2, c="k", lw=.4, ls=":", zorder=.5)
-a2.annotate("", xy=(2.5, emQ), xytext=(2.5, emX), arrowprops=ar); a2.text(2.62, (emX + emQ) / 2, r"$\mathrm{\Delta E_{vac}}$", ha="left", va="center", fontsize=7.5)
-a2.set_xlim(-1.0, 3.9); a2.set_ylim(-7.4, .9)
+a2.annotate("", xy=(.45, vbm), xytext=(.45, 0), arrowprops=ar); a2.text(.37, -3.3, r"$\mathrm{IP_X}$", ha="right", va="center", fontsize=7.5)
+a2.annotate("", xy=(1.08, cbm), xytext=(1.08, 0), arrowprops=ar); a2.text(1.0, -1.4, r"$\mathrm{EA_X}$", ha="right", va="center", fontsize=7.5)
+a2.annotate("", xy=(2.75, cbm), xytext=(2.75, dV), arrowprops=ar); a2.text(2.83, -1.0, r"$\mathrm{EA_Q}$", ha="left", va="center", fontsize=7.5)
+a2.annotate("", xy=(3.45, vbm), xytext=(3.45, dV), arrowprops=ar); a2.text(3.53, -3.0, r"$\mathrm{IP_Q}$", ha="left", va="center", fontsize=7.5)
+a2.plot([L1, 4.15], [0, 0], c=cX, ls=":", lw=.6); a2.annotate("", xy=(4.1, dV), xytext=(4.1, 0), arrowprops=ar)
+a2.text(4.2, dV / 2, r"$\mathrm{\Delta E_{vac}}$", ha="left", va="center", fontsize=7.5)
+a2.set_xlim(-.4, 5.0); a2.set_ylim(-6.5, 1.9)
 
 # ---------- (a3) four contacts
 ROW = [("X", EL["Se"]), ("A", EL["Al"]), ("M", EL["Sn"]), ("Q", EL["As"])]
@@ -140,7 +139,8 @@ def _db(cx, y0, w, col, h=2.6, g=.7, e=2.3, pad=0.0, fc_override=None, z=3):
 for cx_ in (82.2, 91.1): _db(cx_, 64.6, 7.6, "#2B63D0", z=3)
 _db(86.65, 60.4, 7.6, "#161B57", pad=.7, fc_override="white", z=4)
 _db(86.65, 60.4, 7.6, "#161B57", z=4.5)
-W.text(86.65, 57.6, "DFT database (599)", ha="center", va="top", fontsize=7.8, color=INK)
+W.text(86.65, 58.3, "599 of 832 with known type", ha="center", va="top", fontsize=7.4, color=INK)
+for x_, t_, n_ in ((80.6, "I", 161), (86.65, "II", 369), (92.7, "III", 69)): W.text(x_, 55.9, f"{t_}: {n_}", ha="center", va="center", fontsize=7.2, color=TY[t_], fontweight="bold")
 adb = fig.add_axes([64.2 / 100, 56.4 / 83.333, 10.8 / 100, 14.6 / 83.333]); adb.axis("off")
 # ---------- (a5) DFT potential: Origin frame
 a4 = fig.add_axes([0.552, 0.705, 0.175, 0.205]); z = np.linspace(0, 45, 600)
@@ -181,7 +181,7 @@ tag(xs0 + 2 * (bw + gap), SY0 + bh + .7, "MACE-MP-0 rigid scan:\nstacking pre-se
 W.add_patch(FancyBboxPatch((xs0 + 3 * (bw + gap), SY0 + bh + .7), bw, 5.0, boxstyle="round,pad=0,rounding_size=0.8", fc="#EAF0FA", ec="#2F5DA8", lw=.7, ls=(0, (3, 2)), zorder=3))
 W.text(xs0 + 3 * (bw + gap) + bw / 2, SY0 + bh + 3.2, "+ 59 blind, 102 transfer interfaces\n(same DFT protocol, never fitted)", linespacing=1.1, ha="center", va="center", fontsize=6.4, color="#2F5DA8", zorder=4)
 # ---------- (b) chips -> hub (elbow), hub -> outputs (elbow)
-chips = [r"$\Delta E_m$ (face)", r"$E_{g,1}+E_{g,2}$", r"$m_v, m_c$ (DOS)", r"$s_1, s_2$ (dipole)", r"$\chi_1+\chi_2$ (contact)"]
+chips = [r"$\Delta E_m$ (contact faces)", r"$E_{g,1}+E_{g,2}$", r"$m_v, m_c$ (DOS)", r"$s_1, s_2$ (dipole)", r"$\chi_1+\chi_2$ (contact)"]
 ys = [27.5 - k * 5.0 for k in range(5)]; HX, HY, HR = 35, 17.5, 7.4
 W.text(12.5, 30.7, "monolayer inputs", ha="center", fontsize=8.5, fontweight="bold", color=INK)
 for y, ch in zip(ys, chips):
@@ -202,11 +202,11 @@ for k, (name, y, stat) in enumerate(outs):
     elbow([(46.0, y), (49.8, y)])
     ax = fig.add_axes([0.50, (y - 4.2) / 83.333, 0.085, 8.4 / 83.333]); ax.tick_params(labelsize=5.6, length=1.8, pad=1); ax.minorticks_on()
     if k == 0:
-        for cc, col in (("XX", "#2F5DA8"), ("QX", "#2E9E62"), ("QQ", "#C0392B")):
+        for cc, col in (("XX", "#2F6DB5"), ("QX", "#D46A9F"), ("QQ", "#5A5A5A")):
             d = T[T.contact == cc]; ax.scatter(d.oof_hyb, d.eVh_B, s=.8, c=col, lw=0)
         ax.plot([-.8, .8], [-.8, .8], c="k", lw=.5); ax.set_xlim(-.8, .8); ax.set_ylim(-.8, .8)
     elif k == 1:
-        ax.hist(D.w_min[D.contact == "XX"], bins=12, color="#2F5DA8", alpha=.6); ax.hist(D.w_min[D.contact == "QQ"], bins=12, color="#C0392B", alpha=.6)
+        ax.hist(D.w_min[D.contact == "XX"], bins=12, color="#2F6DB5", alpha=.6); ax.hist(D.w_min[D.contact == "QQ"], bins=12, color="#5A5A5A", alpha=.6)
     else:
         for t in ("I", "II", "III"):
             d = A[A.type_hyb == t]; ax.scatter(d.dE.abs(), d.Eg1 + d.Eg2, s=.5, c=TY[t], lw=0)
@@ -228,4 +228,4 @@ for k, (a, b) in enumerate(rows):
     if k % 2 == 0: W.add_patch(Rectangle((x0 + .3, yy - 1.3), w - .6, 2.6, fc="#F4EEF9", ec="none", zorder=4))
     W.text(x0 + .8, yy, a, fontsize=6.9, va="center", color=INK, zorder=5); W.text(x0 + w - .8, yy, b, fontsize=6.9, va="center", ha="right", color="#8E44AD" if k != 3 else MUTE, fontweight="bold", zorder=5)
 W.text(x0 + .8, y0 + 1.2, "*localized regime (CV 0.90)", fontsize=6.0, color=MUTE, va="center", zorder=5)
-_boldticks(fig); fig.savefig("fig0_workflow13.pdf"); fig.savefig("fig/fig0_workflow13.png", dpi=220)
+_boldticks(fig); fig.savefig("fig0_workflow14.pdf"); fig.savefig("fig/fig0_workflow14.png", dpi=220)
