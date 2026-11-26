@@ -192,9 +192,9 @@ tag(xs0 + 2 * (bw + gap), SY0 + bh + .7, "MACE-MP-0 rigid scan:\nstacking pre-se
 W.add_patch(FancyBboxPatch((xs0 + 3 * (bw + gap), SY0 + bh + .7), bw, 5.0, boxstyle="round,pad=0,rounding_size=0.8", fc="#EAF0FA", ec="#2F5DA8", lw=.7, ls=(0, (3, 2)), zorder=3))
 W.text(xs0 + 3 * (bw + gap) + bw / 2, SY0 + bh + 3.2, "+ 59 blind, 102 transfer interfaces\n(same DFT protocol, never fitted)", linespacing=1.1, ha="center", va="center", fontsize=6.4, color="#2F5DA8", zorder=4)
 # ---------- (b) chips -> hub (elbow), hub -> outputs (elbow)
-chips = [r"$\Delta E_m$ (contact faces)", r"$E_{g,1}+E_{g,2}$", r"$m_v, m_c$ (DOS)", r"$s_1, s_2$ (dipole)", r"$\chi_1+\chi_2$ (contact)"]
+chips = [r"midgap offset $\Delta E_m$", r"gaps $E_{g,1}$, $E_{g,2}$", r"masses $m_v$, $m_c$", r"vacuum steps $s_1$, $s_2$", r"contact $\chi_{1,2}$, $n_Q$, $a$"]
 ys = [27.5 - k * 5.0 for k in range(5)]; HX, HY, HR = 35, 17.5, 7.4
-W.text(12.5, 30.7, "monolayer inputs", ha="center", fontsize=8.5, fontweight="bold", color=INK)
+W.text(12.5, 31.2, "5 groups of monolayer descriptors", ha="center", fontsize=8.5, fontweight="bold", color=INK); W.text(12.5, 3.0, "(up to 17 features per model)", ha="center", fontsize=7, color=MUTE)
 for y, ch in zip(ys, chips):
     W.add_patch(FancyBboxPatch((4, y - 1.6), 16.5, 3.2, boxstyle="round,pad=0,rounding_size=1.2", fc="white", ec="#3A86C8", lw=.8, zorder=3))
     W.text(12.25, y, ch, ha="center", va="center", fontsize=8.2, color=INK, zorder=4)
