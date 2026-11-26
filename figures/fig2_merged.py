@@ -10,11 +10,17 @@ TT = {"I": "#7B3FA0", "II": "#12938F", "III": "#A61B1B"}; TN = {"I": "straddling
 L1C, L2C = "#2B5BA8", "#D9661F"
 T = pd.read_csv("train_oof.csv"); T["pair"] = ["|".join(sorted([a, b])) for a, b in zip(T.L1, T.L2)]
 P = T[T.pair == "SeAlSnAs|TeGaGeP"].copy(); P["lab"] = P.f1 + P.f2; P = P.set_index("lab").loc[["XX", "XQ", "QX", "QQ"]]
-fig = plt.figure(figsize=(7.2, 5.9))
-gs = fig.add_gridspec(2, 4, height_ratios=[.9, 2.5], hspace=.08, wspace=.12, left=.08, right=.99, top=.965, bottom=.315)
+from matplotlib.patches import Circle as _C
+def _sph(ax, x, y, r, col):
+    c = np.array(to_rgb(col)); ax.add_patch(_C((x, y), r, fc=c * .72, ec="none", zorder=3))
+    for k in range(1, 9):
+        f = k / 9; cc = c * (.72 + .28 * f) + (1 - c) * .55 * f ** 2.2
+        ax.add_patch(_C((x - .32 * r * f, y + .32 * r * f), r * (1 - .82 * f), fc=np.clip(cc, 0, 1), ec="none", zorder=3))
+fig = plt.figure(figsize=(7.2, 6.4))
+gs = fig.add_gridspec(2, 4, height_ratios=[1.35, 2.5], hspace=.08, wspace=.12, left=.08, right=.99, top=.97, bottom=.29)
 for i, (lb, r) in enumerate(P.iterrows()):
     # --- sơ đồ hai lớp: lớp 1 (SeAlSnAs) ở dưới, lớp 2 (TeInSiAs) ở trên; mặt tiếp xúc ở giữa
-    a = fig.add_subplot(gs[0, i]); a.axis("off"); a.set_xlim(0, 1); a.set_ylim(-.05, 2.55)
+    a = fig.add_subplot(gs[0, i]); a.axis("off"); a.set_xlim(0, 1); a.set_ylim(-.05, 2.55); a.set_aspect("equal", adjustable="datalim")
     def stack(y0, contact_face, flip):
         seq = ["X", "A", "M", "Q"]                       # từ dưới lên khi mặt X ở dưới
         if contact_face == "X": seq = seq[::-1] if not flip else seq
@@ -23,11 +29,14 @@ for i, (lb, r) in enumerate(P.iterrows()):
     # lớp dưới: mặt tiếp xúc ở trên cùng; lớp trên: mặt tiếp xúc ở dưới cùng
     low = ["X", "A", "M", "Q"] if r.f1 == "Q" else ["Q", "M", "A", "X"]
     up = ["X", "A", "M", "Q"] if r.f2 == "X" else ["Q", "M", "A", "X"]
-    for k, e in enumerate(low): a.add_patch(Rectangle((.18, .05 + k * .26), .64, .21, fc=ROW[e], ec="none"))
-    for k, e in enumerate(up): a.add_patch(Rectangle((.18, 1.35 + k * .26), .64, .21, fc=ROW[e], ec="none"))
-    a.add_patch(Rectangle((.13, 1.0), .74, .4, fc="none", ec="0.35", lw=.8, ls=":"))
-    a.add_patch(Rectangle((.06, .02), .05, 1.02, fc=L1C, ec="none")); a.add_patch(Rectangle((.06, 1.32), .05, 1.04, fc=L2C, ec="none"))
-    a.text(.5, 2.52, lb, ha="center", va="bottom", fontsize=12, fontweight="bold", color=CC[lb])
+    for y0, seq in ((.16, low), (1.32, up)):
+        for k, e in enumerate(seq):
+            off = .085 if k % 2 else 0
+            for n in range(7 if not k % 2 else 6):
+                _sph(a, -.01 + off + n * .17, y0 + k * .245, .072 if e != "A" else .062, ROW[e])
+    a.add_patch(Rectangle((-.1, 0.96), 1.22, .32, fc="none", ec="0.35", lw=.8, ls=":"))
+    a.add_patch(Rectangle((-.2, .07), .045, .91, fc=L1C, ec="none")); a.add_patch(Rectangle((-.2, 1.24), .045, .91, fc=L2C, ec="none"))
+    a.text(.51, 2.25, lb, ha="center", va="bottom", fontsize=12, fontweight="bold", color=CC[lb])
     # --- giản đồ cạnh vùng theo lớp
     ax = fig.add_subplot(gs[1, i])
     for L, x0, col in ((1, .2, L1C), (2, .58, L2C)):
@@ -47,9 +56,10 @@ for i, (lb, r) in enumerate(P.iterrows()):
         for t in ax.get_yticklabels(): t.set_fontweight("bold"); t.set_fontsize(10)
     else: ax.set_yticklabels([])
 from matplotlib.patches import Patch
-fig.legend([Patch(fc=ROW[e]) for e in "XAMQ"] + [Patch(fc=L1C), Patch(fc=L2C), Patch(fc=tint(L1C, .62), ec=L1C, lw=.8), Patch(fc=L1C, ec=L1C)],
+from matplotlib.lines import Line2D as _L2
+fig.legend([_L2([], [], marker="o", ls="none", ms=7, mfc=ROW[e], mec="none") for e in "XAMQ"] + [Patch(fc=L1C), Patch(fc=L2C), Patch(fc=tint(L1C, .62), ec=L1C, lw=.8), Patch(fc=L1C, ec=L1C)],
            ["X (S, Se, Te)", "A (Al, Ga, In)", "M (Si–Pb)", "Q (P, As, Sb)", "SeAlSnAs", "TeGaGeP", "CB (light fill)", "VB (solid fill)"],
-           loc="lower left", ncol=2, frameon=False, fontsize=10, bbox_to_anchor=(.07, .035), handlelength=2.0, handleheight=1.2, columnspacing=1.6, labelspacing=.55)
+           loc="lower left", ncol=2, frameon=False, fontsize=10, bbox_to_anchor=(.07, .03), handlelength=2.0, handleheight=1.2, columnspacing=1.6, labelspacing=.55)
 
 
 # ===== bottom row: data set, VBO change between faces, layer-gap renormalization
@@ -90,7 +100,7 @@ def nomx(ax): ax.tick_params(axis="x", which="minor", bottom=False, top=False)
 FS = 9
 gb = fig.add_gridspec(1, 3, left=.08, right=.99, top=.255, bottom=.05, wspace=.45, width_ratios=[1, 1.4, 1])
 figS = plt.figure(figsize=(7.2, 2.7)); gSb = figS.add_gridspec(1, 2, wspace=.32)
-AX = [figS.add_subplot(gSb[0, 0]), fig.add_axes([.53, .075, .45, .175]), figS.add_subplot(gSb[0, 1])]
+AX = [figS.add_subplot(gSb[0, 0]), fig.add_axes([.53, .07, .45, .16]), figS.add_subplot(gSb[0, 1])]
 for a_ in AX: a_.tick_params(labelsize=FS, direction="in", top=True, right=True); a_.minorticks_on()
 # (c) bộ dữ liệu
 ax = AX[0]; cnt = T.groupby(["contact", "type_dft"]).size().unstack(fill_value=0).loc[["XX", "QX", "QQ"]]; bot = np.zeros(3)
