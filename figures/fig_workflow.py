@@ -124,19 +124,25 @@ a4.plot([2, 41], [-.6, -.6], c="k", lw=.4, ls=":"); a4.annotate("", xy=(40, .6),
 curved((17.5, 76.61), (26.5, 76.61), -0.35); curved((36.8, 54.61), (43.5, 54.61), 0.45); curved((62.8, 72.61), (66.0, 70.11), -0.45); curved((73.5, 70.11), (79.5, 72.61), -0.45)
 
 # ---------- (a) numbered pipeline with counts and the two roles of MACE
-STEPS = [("1", "108 monolayers", "all X–A–M–Q, DFT relaxed;\nface-resolved IP and EA"),
+STEPS = [("1", "108 monolayers", "all X–A–M–Q, DFT relaxed;\nIP and EA on each face"),
          ("2", "7 796 interfaces", "4 contacts per pair, lattice-\nmatched (≤ 3%) of 23 112"),
          ("3", "832 heterostructures", "lowest stacking, DFT relaxed;\ndipole, layer band edges"),
          ("4", "599 fitting set", "both layers gapped; all\nvalues in steps 1–4 from DFT")]
 SY0 = 39.6; bw, bh, gap = 22.4, 8.2, 1.95; xs0 = 2.4
+SHD = ["#7FA3D9", "#5584C8", "#3767B4", "#1F4E9C"]; HH = 3.3
+from matplotlib.patches import Polygon
 for k, (n, ttl, sub) in enumerate(STEPS):
-    x = xs0 + k * (bw + gap)
-    W.add_patch(FancyBboxPatch((x, SY0), bw, bh, boxstyle="round,pad=0,rounding_size=1.0", fc="white", ec="#2F5DA8", lw=.8, zorder=3))
-    W.add_patch(Circle((x + 2.3, SY0 + bh - 2.2), 1.5, fc="#2F5DA8", ec="none", zorder=4))
-    W.text(x + 2.3, SY0 + bh - 2.2, n, ha="center", va="center", color="white", fontsize=8, fontweight="bold", zorder=5)
-    W.text(x + 4.5, SY0 + bh - 2.2, ttl, va="center", fontsize=8.5, fontweight="bold", color=INK, zorder=5)
-    W.text(x + 1.3, SY0 + 2.5, sub, va="center", fontsize=6.6, color=MUTE, linespacing=1.15, zorder=5)
-    if k < 3: W.add_patch(FancyArrowPatch((x + bw + .2, SY0 + bh / 2), (x + bw + gap - .2, SY0 + bh / 2), arrowstyle="-|>,head_length=4,head_width=2.4", lw=1.1, color=ARR, zorder=5))
+    x = xs0 + k * (bw + gap); cH = SHD[k]
+    W.add_patch(FancyBboxPatch((x, SY0), bw, bh, boxstyle="round,pad=0,rounding_size=0.9", fc="white", ec=cH, lw=.9, zorder=3))
+    W.add_patch(FancyBboxPatch((x, SY0 + bh - HH), bw, HH, boxstyle="round,pad=0,rounding_size=0.9", fc=cH, ec=cH, lw=.9, zorder=4))
+    W.add_patch(Rectangle((x, SY0 + bh - HH), bw, HH / 2, fc=cH, ec="none", zorder=4))
+    W.add_patch(Circle((x + 1.9, SY0 + bh - HH / 2), 1.15, fc="white", ec="none", zorder=5))
+    W.text(x + 1.9, SY0 + bh - HH / 2, n, ha="center", va="center", color=cH, fontweight="bold", zorder=6)
+    W.text(x + 3.7, SY0 + bh - HH / 2, ttl, va="center", color="white", fontweight="bold", zorder=6)
+    W.text(x + 1.2, SY0 + (bh - HH) / 2, sub, va="center", fontsize=6.6, color="#374151", linespacing=1.15, zorder=5)
+    if k < 3:
+        xa, ym = x + bw + .35, SY0 + bh - HH / 2
+        W.add_patch(Polygon([(xa, ym - 1.1), (xa + gap - .7, ym), (xa, ym + 1.1)], closed=True, fc=SHD[k + 1], ec="none", zorder=5))
 def tag(x, y, txt):
     W.add_patch(FancyBboxPatch((x, y), bw, 5.0, boxstyle="round,pad=0,rounding_size=0.8", fc="#FDF2E9", ec="#E08E2B", lw=.7, ls=(0, (3, 2)), zorder=3))
     W.text(x + bw / 2, y + 2.5, txt, linespacing=1.1, ha="center", va="center", fontsize=6.4, color="#9A5512", zorder=4)
@@ -192,4 +198,4 @@ for k, (a, b) in enumerate(rows):
     if k % 2 == 0: W.add_patch(Rectangle((x0 + .3, yy - 1.3), w - .6, 2.6, fc="#F4EEF9", ec="none", zorder=4))
     W.text(x0 + .8, yy, a, fontsize=6.9, va="center", color=INK, zorder=5); W.text(x0 + w - .8, yy, b, fontsize=6.9, va="center", ha="right", color="#8E44AD" if k != 3 else MUTE, fontweight="bold", zorder=5)
 W.text(x0 + .8, y0 + 1.2, "*localized regime (CV 0.90)", fontsize=6.0, color=MUTE, va="center", zorder=5)
-_boldticks(fig); fig.savefig("fig0_workflow8.pdf"); fig.savefig("fig/fig0_workflow8.png", dpi=220)
+_boldticks(fig); fig.savefig("fig0_workflow9.pdf"); fig.savefig("fig/fig0_workflow9.png", dpi=220)
