@@ -146,8 +146,8 @@ ax = axs[6]; Al = A[A.p_local >= .3]; Ah = A[A.p_local < .3]
 ax.scatter(Ah.dE.abs(), Ah.Eg1 + Ah.Eg2, s=1.5, c="#E8B931", alpha=.5, lw=0, label="hybridized")
 for t in ("I", "II", "III"):
     d = Al[Al.type_hyb == t]; ax.scatter(d.dE.abs(), d.Eg1 + d.Eg2, s=3, c=TTY[t], lw=0, label=f"type {t}")
-ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$E_{g,1}+E_{g,2}$ (eV)", xlim=(0, 2.5), ylim=(0, 7.4)); ax.set_yticks(range(0, 6))
-ax.legend(loc="upper left", fontsize=7.5, markerscale=3, handletextpad=0, ncol=2, columnspacing=.3, borderaxespad=.15, handlelength=1.2)
+ax.set(xlabel=r"$|\Delta E_m|$ (eV)", ylabel=r"$E_{g,1}+E_{g,2}$ (eV)", xlim=(0, 2), ylim=(0, 5)); ax.set_yticks(range(0, 6))
+ax.legend(loc="lower left", bbox_to_anchor=(-.02, 1.0), fontsize=7.5, markerscale=3, handletextpad=0, ncol=4, columnspacing=.6, borderaxespad=0, handlelength=1.2, frameon=False)
 # confident subset: predicted localized and type margin > 0.1 eV (ML-corrected dipole)
 v1, c1 = -A.Eg1 / 2, A.Eg1 / 2; sh = A.dE - A.eVh_hyb; v2, c2 = sh - A.Eg2 / 2, sh + A.Eg2 / 2
 A["margin"] = np.minimum.reduce([np.abs(v1 - v2), np.abs(c1 - c2), np.abs(np.minimum(c1, c2) - np.maximum(v1, v2))])
