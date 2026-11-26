@@ -10,8 +10,8 @@ TT = {"I": "#7E3BA8", "II": "#F08C1E", "III": "#1FB0CC"}; TN = {"I": "straddling
 L1C, L2C = "#2B5BA8", "#D9661F"
 T = pd.read_csv("train_oof.csv"); T["pair"] = ["|".join(sorted([a, b])) for a, b in zip(T.L1, T.L2)]
 P = T[T.pair == "SeAlSnAs|TeGaGeP"].copy(); P["lab"] = P.f1 + P.f2; P = P.set_index("lab").loc[["XX", "XQ", "QX", "QQ"]]
-fig = plt.figure(figsize=(7.3, 7.7))
-gs = fig.add_gridspec(2, 4, height_ratios=[.9, 2.5], hspace=.08, wspace=.12, left=.08, right=.99, top=.965, bottom=.455)
+fig = plt.figure(figsize=(7.2, 5.9))
+gs = fig.add_gridspec(2, 4, height_ratios=[.9, 2.5], hspace=.08, wspace=.12, left=.08, right=.99, top=.965, bottom=.315)
 for i, (lb, r) in enumerate(P.iterrows()):
     # --- sơ đồ hai lớp: lớp 1 (SeAlSnAs) ở dưới, lớp 2 (TeInSiAs) ở trên; mặt tiếp xúc ở giữa
     a = fig.add_subplot(gs[0, i]); a.axis("off"); a.set_xlim(0, 1); a.set_ylim(-.05, 2.55)
@@ -48,7 +48,7 @@ for i, (lb, r) in enumerate(P.iterrows()):
 from matplotlib.patches import Patch
 fig.legend([Patch(fc=ROW[e]) for e in "XAMQ"] + [Patch(fc=L1C), Patch(fc=L2C), Patch(fc="white", ec="k", lw=.6), Patch(fc="0.55")],
            ["X (S, Se, Te)", "A (Al, Ga, In)", "M (Si–Pb)", "Q (P, As, Sb)", "SeAlSnAs", "TeGaGeP", "CB (light)", "VB (solid)"],
-           loc="lower center", ncol=4, frameon=False, fontsize=10, bbox_to_anchor=(.53, .345), handlelength=2.0, handleheight=1.2, columnspacing=1.6)
+           loc="lower left", ncol=2, frameon=False, fontsize=10, bbox_to_anchor=(.07, .035), handlelength=2.0, handleheight=1.2, columnspacing=1.6, labelspacing=.55)
 
 
 # ===== bottom row: data set, VBO change between faces, layer-gap renormalization
@@ -89,7 +89,7 @@ def nomx(ax): ax.tick_params(axis="x", which="minor", bottom=False, top=False)
 FS = 9
 gb = fig.add_gridspec(1, 3, left=.08, right=.99, top=.255, bottom=.05, wspace=.45, width_ratios=[1, 1.4, 1])
 figS = plt.figure(figsize=(7.2, 2.7)); gSb = figS.add_gridspec(1, 2, wspace=.32)
-AX = [figS.add_subplot(gSb[0, 0]), fig.add_axes([.36, .05, .40, .205]), figS.add_subplot(gSb[0, 1])]
+AX = [figS.add_subplot(gSb[0, 0]), fig.add_axes([.53, .075, .45, .175]), figS.add_subplot(gSb[0, 1])]
 for a_ in AX: a_.tick_params(labelsize=FS, direction="in", top=True, right=True); a_.minorticks_on()
 # (c) bộ dữ liệu
 ax = AX[0]; cnt = T.groupby(["contact", "type_dft"]).size().unstack(fill_value=0).loc[["XX", "QX", "QQ"]]; bot = np.zeros(3)
@@ -101,12 +101,17 @@ T["pair"] = ["|".join(sorted([a, b])) for a, b in zip(T.L1, T.L2)]
 # (e) |ΔVBO|
 m_ = T[T.pair.map(T.pair.value_counts()) >= 2]; x = []
 T["vbo_s"] = [(r.VBM1 - r.VBM2) if r.L1 == sorted([r.L1, r.L2])[0] else (r.VBM2 - r.VBM1) for r in T.itertuples()]
+xs_, xd_ = [], []
 for p, g in T[T.pair.isin(m_.pair)].groupby("pair"):
-    v = g.vbo_s.values; x += [abs(v[i] - v[j]) for i in range(len(v)) for j in range(i + 1, len(v))]
+    v = g.vbo_s.values; tt = g.type_dft.values
+    for i in range(len(v)):
+        for j in range(i + 1, len(v)):
+            x.append(abs(v[i] - v[j])); (xd_ if tt[i] != tt[j] else xs_).append(abs(v[i] - v[j]))
 sw = m_.groupby("pair").type_dft.nunique() > 1
-ax = AX[1]; ax.hist(x, bins=np.linspace(0, 2, 21), color="#3A6FB8", edgecolor="white", lw=.7); ax.axvline(np.median(x), c="#C0392B", ls="--", lw=1)
+ax = AX[1]; ax.hist([xs_, xd_], bins=np.linspace(0, 2, 21), stacked=True, color=["#9DB7DA", "#E07B39"], edgecolor="white", lw=.7, label=["same type", "type changes"]); ax.axvline(np.median(x), c="k", ls="--", lw=.8)
+ax.legend(loc="center right", frameon=False, handlelength=1.0, handleheight=.9, borderaxespad=.3)
 ax.set_xlabel(r"|$\Delta$VBO| between faces (eV)", fontsize=10, fontweight="bold"); ax.set_ylabel("face pairs", fontsize=10, fontweight="bold")
-ax.text(.96, .95, f"{sw.sum()}/{len(sw)} pairs switch type\nmedian {np.median(x):.2f} eV", transform=ax.transAxes, ha="right", va="top", fontsize=8, bbox=dict(fc="white", ec="none", pad=1.5))
+ax.text(.97, .95, f"{sw.sum()}/{len(sw)} pairs switch type", transform=ax.transAxes, ha="right", va="top", fontsize=8); ax.text(np.median(x) + .03, ax.get_ylim()[1] * .93, f"median {np.median(x):.2f} eV", ha="left", va="top", fontsize=8)
 # (f) co khe theo lớp
 ax = AX[2]; T["dg1"] = T.CBM1 - T.VBM1 - T.Eg1; T["dg2"] = T.CBM2 - T.VBM2 - T.Eg2
 R = pd.DataFrame([(r.contact, r.f1, r.dg1) for r in T.itertuples()] + [(r.contact, r.f2, r.dg2) for r in T.itertuples()], columns=["contact", "face", "dg"])
@@ -120,7 +125,7 @@ ax.axhline(0, c="k", lw=.5, ls=":"); ax.set_xticks(range(1, 5)); ax.set_xticklab
 ax.set_ylabel(r"$E_g^{layer}-E_g^{mono}$ (eV)", fontsize=10, fontweight="bold")
 
 fig.text(.005, .975, "a", fontweight="bold", fontsize=12)
-AX[1].text(-.19, 1.06, "b", transform=AX[1].transAxes, fontweight="bold", fontsize=12)
+AX[1].text(-.16, 1.04, "b", transform=AX[1].transAxes, fontweight="bold", fontsize=12)
 for a, l_ in zip([AX[0], AX[2]], "ab"): a.text(-.2, 1.04, l_, transform=a.transAxes, fontweight="bold", fontsize=12)
-_boldticks(fig); fig.savefig("fig2_merged.pdf", bbox_inches="tight"); fig.savefig("fig/fig2_merged.png", bbox_inches="tight", dpi=200)
-_boldticks(figS); figS.savefig("figS_dataset_gap.pdf", bbox_inches="tight")
+_boldticks(fig); fig.savefig("fig2_v2.pdf", bbox_inches="tight"); fig.savefig("fig/fig2_v2.png", bbox_inches="tight", dpi=200)
+
