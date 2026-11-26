@@ -59,10 +59,17 @@ def bond(ax, p, q, c1, c2):
         ax.plot([a[0], b[0]], [a[1], b[1]], c=cc, lw=3.0, solid_capstyle="butt", zorder=2, path_effects=[pe.Stroke(linewidth=3.8, foreground="#555"), pe.Normal()])
 panel(38.5, 43.33, "a", "Data generation: monolayers, interfaces and DFT heterostructures")
 panel(1.5, 35.5, "b", "Regression models fitted on the 599 interfaces, frozen, then tested")
+from matplotlib.patches import Polygon
+_TX = ((2.4, 20.6), (21.6, 41.2), (42.4, 63.6), (64.8, 76.0), (77.2, 98.4))
+for k_ in range(4):
+    xa_, xb_ = _TX[k_][1], _TX[k_ + 1][0]
+    W.add_patch(Polygon([(xa_ + .15, 66.1 - .9), (xb_ - .15, 66.1), (xa_ + .15, 66.1 + .9)], closed=True, fc=ARR, ec="none", zorder=6))
+for x0_, x1_ in _TX:
+    W.add_patch(FancyBboxPatch((x0_, 54.6), x1_ - x0_, 23.0, boxstyle="round,pad=0,rounding_size=0.8", fc="white", ec="#4B5563", lw=.7, zorder=1))
 # ---------- (a1) VESTA-like side view
 at = {a.info["name"]: a for a in read("../expand/S3.extxyz", ":") if a.info["name"] == "SeAlSnAs"}["SeAlSnAs"]
 c = at.cell; pos = at.positions; sym = at.get_chemical_symbols(); z0 = pos[:, 2].min()
-a1 = fig.add_axes([0.03, 0.6298, 0.17, 0.2970]); a1.set_xticks([]); a1.set_yticks([]); a1.set_aspect("equal")
+a1 = fig.add_axes([0.03, 0.6698, 0.17, 0.2470]); a1.axis("off"); a1.set_aspect("equal")
 sc = at.repeat((4, 4, 1)); R = sc.positions.copy(); R[:, 0] -= c[0, 0] * 1.5 + c[1, 0] * 1.5; R[:, 1] -= c[1, 1] * 1.5; R[:, 2] -= z0; SY = sc.get_chemical_symbols()
 keep = (R[:, 1] > -0.2) & (R[:, 1] < c[1, 1] - 0.2) & (R[:, 0] > -0.6) & (R[:, 0] < 2 * c[0, 0] - 0.4)
 from scipy.spatial.distance import cdist
@@ -82,7 +89,7 @@ a1.text(c[0, 0] / 2, 6.3, "Q", ha="center", fontsize=9.4, fontweight="bold", col
 
 # ---------- (a2) face-resolved levels: Origin frame
 M = pd.read_csv("../res4/mono_strain.csv"); m0 = M[(M.name == "SeAlSnAs") & (M.strain == 0)].iloc[0]
-a2 = fig.add_axes([0.255, 0.655, 0.145, 0.252])
+a2 = fig.add_axes([0.255, 0.700, 0.145, 0.212])
 FC = {"X": "#D9822B", "Q": "#C04A7A"}; XC = {"X": 0.0, "Q": 1.15}; hw = .28
 from matplotlib.colors import to_rgb as _rgb
 def _t(c, f): r = np.array(_rgb(c)); return tuple(r + (1 - r) * f)
@@ -104,7 +111,7 @@ a2.set_ylabel("Energy (eV)", fontsize=8.1, labelpad=1); a2.tick_params(axis="x",
 
 # ---------- (a3) four contacts
 ROW = [("X", EL["Se"]), ("A", EL["Al"]), ("M", EL["Sn"]), ("Q", EL["As"])]
-a3 = fig.add_axes([0.435, 0.6478, 0.19, 0.2430]); a3.set_xticks([]); a3.set_yticks([]); a3.set_aspect("equal"); a3.set_xlim(0, 4.4); a3.set_ylim(-.65, 2.6)
+a3 = fig.add_axes([0.432, 0.668, 0.20, 0.245]); a3.axis("off"); a3.set_aspect("equal"); a3.set_xlim(0, 4.4); a3.set_ylim(-.65, 2.6)
 ROW = ["Se", "Al", "Sn", "As"]
 for i, nm in enumerate(("XX", "XQ", "QX", "QQ")):
     for (y0, up) in ((0, nm[0]), (1.25, "Q" if nm[1] == "X" else "X")):
@@ -122,9 +129,9 @@ W.add_patch(Rectangle((66.3, 61.11), 6.6, 7.5, fc="#CFDDF0", ec="#2F5DA8", lw=.8
 for yy in (52.5, 55, 57.5): W.add_patch(Ellipse((69.6, yy + 8.61), 6.6, 1.7, fc="#CFDDF0", ec="#2F5DA8", lw=.8))
 W.add_patch(Ellipse((69.6, 68.61), 6.6, 1.7, fc="#A9C3E8", ec="#2F5DA8", lw=.8))
 W.text(69.6, 59.21, "DFT database", ha="center", va="top", fontsize=7.8, color=INK)
-adb = fig.add_axes([64.2 / 100, 56.4 / 83.333, 10.8 / 100, 14.6 / 83.333]); adb.patch.set_alpha(0); adb.set_xticks([]); adb.set_yticks([])
+adb = fig.add_axes([64.2 / 100, 56.4 / 83.333, 10.8 / 100, 14.6 / 83.333]); adb.axis("off")
 # ---------- (a5) DFT potential: Origin frame
-a4 = fig.add_axes([0.805, 0.6793, 0.165, 0.2205]); z = np.linspace(0, 45, 600)
+a4 = fig.add_axes([0.822, 0.705, 0.152, 0.205]); z = np.linspace(0, 45, 600)
 V = 4.4 + .6 * np.tanh((z - 22.5) / .6) - 7 * (np.exp(-((z - 17) / 1.4) ** 2) + np.exp(-((z - 28) / 1.4) ** 2)) - 3.5 * (np.exp(-((z - 19.5) / .9) ** 2) + np.exp(-((z - 25.5) / .9) ** 2))
 V = V - 4.4 + .0
 a4.plot(z, V, c="#2E9E62", lw=1.0); a4.set_xlim(0, 45); a4.set_ylim(-8.5, 2.5); a4.minorticks_on()
@@ -132,7 +139,7 @@ a4.set_xlabel("z (Å)", fontsize=8.1, labelpad=1); a4.set_ylabel(r"$\bar V$ (eV)
 a4.plot([2, 41], [-.6, -.6], c="k", lw=.4, ls=":"); a4.annotate("", xy=(40, .6), xytext=(40, -.6), arrowprops=dict(arrowstyle="<->", lw=.6, shrinkA=0, shrinkB=0)); a4.text(29, 1.1, r"$\Delta\Phi_{bi}$", fontsize=7.5)
 
 # curved arrows (over / under alternating)
-curved((17.5, 76.61), (26.5, 76.61), -0.35); curved((36.8, 54.61), (43.5, 54.61), 0.45); curved((62.8, 72.61), (66.0, 70.11), -0.45); curved((73.5, 70.11), (79.5, 72.61), -0.45)
+pass  # connectors removed: curved((17.5, 76.61), (26.5, 76.61), -0.35); curved((36.8, 54.61), (43.5, 54.61), 0.45); curved((62.8, 72.61), (66.0, 70.11), -0.45); curved((73.5, 70.11), (79.5, 72.61), -0.45)
 
 # ---------- (a) numbered pipeline with counts and the two roles of MACE
 STEPS = [("1", "108 monolayers", "all X–A–M–Q, DFT relaxed;\nIP and EA on each face"),
