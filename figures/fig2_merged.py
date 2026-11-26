@@ -32,10 +32,12 @@ for i, (lb, r) in enumerate(P.iterrows()):
     for y0, seq in ((.16, low), (1.32, up)):
         for k, e in enumerate(seq):
             off = .085 if k % 2 else 0
-            for n in range(7 if not k % 2 else 6):
-                _sph(a, -.01 + off + n * .17, y0 + k * .245, .072 if e != "A" else .062, ROW[e])
-    a.add_patch(Rectangle((-.1, 0.96), 1.22, .32, fc="none", ec="0.35", lw=.8, ls=":"))
-    a.add_patch(Rectangle((-.2, .07), .045, .91, fc=L1C, ec="none")); a.add_patch(Rectangle((-.2, 1.24), .045, .91, fc=L2C, ec="none"))
+            for n in range(9 if not k % 2 else 8):
+                _sph(a, -.18 + off + n * .17, y0 + k * .245, .072 if e != "A" else .062, ROW[e])
+    a.add_patch(Rectangle((-.28, 0.96), 1.56, .32, fc="none", ec="0.35", lw=.8, ls=":"))
+    if i == 0:
+        a.add_patch(Rectangle((-.42, .07), .045, .91, fc=L1C, ec="none", clip_on=False)); a.add_patch(Rectangle((-.42, 1.24), .045, .91, fc=L2C, ec="none", clip_on=False))
+        a.text(-.5, .52, "SeAlSnAs", rotation=90, ha="right", va="center", color=L1C, fontweight="bold", clip_on=False); a.text(-.5, 1.7, "TeGaGeP", rotation=90, ha="right", va="center", color=L2C, fontweight="bold", clip_on=False)
     a.text(.51, 2.25, lb, ha="center", va="bottom", fontsize=12, fontweight="bold", color=CC[lb])
     # --- giản đồ cạnh vùng theo lớp
     ax = fig.add_subplot(gs[1, i])
@@ -57,9 +59,9 @@ for i, (lb, r) in enumerate(P.iterrows()):
     else: ax.set_yticklabels([])
 from matplotlib.patches import Patch
 from matplotlib.lines import Line2D as _L2
-fig.legend([_L2([], [], marker="o", ls="none", ms=7, mfc=ROW[e], mec="none") for e in "XAMQ"] + [Patch(fc=L1C), Patch(fc=L2C), Patch(fc=tint(L1C, .62), ec=L1C, lw=.8), Patch(fc=L1C, ec=L1C)],
-           ["X (S, Se, Te)", "A (Al, Ga, In)", "M (Si–Pb)", "Q (P, As, Sb)", "SeAlSnAs", "TeGaGeP", "CB (light fill)", "VB (solid fill)"],
-           loc="lower left", ncol=2, frameon=False, fontsize=10, bbox_to_anchor=(.07, .03), handlelength=2.0, handleheight=1.2, columnspacing=1.6, labelspacing=.55)
+fig.legend([_L2([], [], marker="o", ls="none", ms=7, mfc=ROW[e], mec="none") for e in "XAMQ"] + [(Patch(fc=tint(L1C, .62), ec=L1C, lw=.8), Patch(fc=tint(L2C, .62), ec=L2C, lw=.8)), (Patch(fc=L1C, ec=L1C), Patch(fc=L2C, ec=L2C))],
+           ["X (S, Se, Te)", "A (Al, Ga, In)", "M (Si–Pb)", "Q (P, As, Sb)", "CB (light)", "VB (solid)"],
+           loc="lower left", ncol=3, frameon=False, handler_map={tuple: __import__("matplotlib.legend_handler", fromlist=["x"]).HandlerTuple(ndivide=None, pad=0)}, fontsize=10, bbox_to_anchor=(.0, .06), handlelength=2.0, handleheight=1.2, columnspacing=.9, labelspacing=.55)
 
 
 # ===== bottom row: data set, VBO change between faces, layer-gap renormalization
