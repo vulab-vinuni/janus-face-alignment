@@ -194,7 +194,7 @@ W.text(xs0 + 3 * (bw + gap) + bw / 2, SY0 + bh + 3.2, "+ 59 blind, 102 transfer 
 # ---------- (b) chips -> hub (elbow), hub -> outputs (elbow)
 chips = [r"midgap offset $\Delta E_m$", r"gaps $E_{g,1}$, $E_{g,2}$", r"masses $m_v$, $m_c$", r"vacuum steps $s_1$, $s_2$", r"contact $\chi_{1,2}$, $n_Q$, $a$"]
 ys = [27.5 - k * 5.0 for k in range(5)]; HX, HY, HR = 35, 17.5, 7.4
-W.text(12.5, 31.2, "5 groups of monolayer descriptors", ha="center", fontsize=8.5, fontweight="bold", color=INK); W.text(12.5, 3.0, "(up to 17 features per model)", ha="center", fontsize=7, color=MUTE)
+W.text(12.5, 31.2, "5 groups of monolayer descriptors", ha="center", fontsize=8.5, fontweight="bold", color=INK)
 for y, ch in zip(ys, chips):
     W.add_patch(FancyBboxPatch((4, y - 1.6), 16.5, 3.2, boxstyle="round,pad=0,rounding_size=1.2", fc="white", ec="#3A86C8", lw=.8, zorder=3))
     W.text(12.25, y, ch, ha="center", va="center", fontsize=8.2, color=INK, zorder=4)
