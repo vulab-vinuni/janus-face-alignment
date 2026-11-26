@@ -3,23 +3,51 @@ from matplotlib.patches import FancyBboxPatch, Rectangle, Circle, Ellipse, Fancy
 from matplotlib.colors import to_rgb
 import matplotlib.patheffects as pe
 from ase.io import read
+plt.rcParams.update({"font.family": "DejaVu Sans", "font.size": 7.0, "xtick.direction": "in", "ytick.direction": "in", "xtick.top": True, "ytick.right": True, "axes.linewidth": .8, "mathtext.default": "regular"})
+plt.rcParams.update({"font.size": 9.5, "axes.labelsize": 10, "axes.labelweight": "bold", "xtick.labelsize": 9, "ytick.labelsize": 9, "legend.fontsize": 8.5, "mathtext.fontset": "cm", "mathtext.default": "it"})
+import re as _re
+def _bm(s):
+    if "$" not in s: return s
+    parts=s.split("$")
+    for i in range(1,len(parts),2):
+        m=parts[i]; out=""; j=0
+        toks=_re.findall(r"\\[A-Za-z]+|[A-Za-z]+|[0-9.]+|\{[^{}]*\}|.",m)
+        k=0
+        while k<len(toks):
+            t=toks[k]
+            if t in ("\\mathrm","\\mathbf","\\text"):
+                out+="\\mathbf"; k+=1
+                if k<len(toks): out+=toks[k]
+            elif t.startswith("\\") and t[1:2].isupper(): out+="\\mathbf{"+t+"}"
+            elif t.startswith("\\") and t[1:] in ("alpha","beta","gamma","delta","chi","rho","sigma","phi","psi","omega","epsilon","mu","nu","eta","theta","tau","lambda","kappa","xi","pi"): out+="\\mathbfit{"+t+"}"
+            elif t.startswith("\\"): out+=t
+            elif t[0].isalpha(): out+="\\mathbfit{"+t+"}"
+            elif t[0].isdigit(): out+="\\mathbf{"+t+"}"
+            elif t.startswith("{"): out+="{"+_bm("$"+t[1:-1]+"$")[1:-1]+"}"
+            else: out+=t
+            k+=1
+        parts[i]=out
+    return "$".join(parts)
+def _boldticks(fig):
+    for _a in fig.axes:
+        _a.set_xlabel(_bm(_a.get_xlabel())); _a.set_ylabel(_bm(_a.get_ylabel()))
+    fig.canvas.draw()
+    for _a in fig.axes:
+        for _t in _a.get_xticklabels() + _a.get_yticklabels(): _t.set_fontweight("bold")
+
 INK, MUTE, ARR = "k", "k", "#E8A86B"
 EL = {"Se": "#E08E2B", "Al": "#6F9FD8", "Sn": "#4F4F6F", "As": "#C04A7A"}   # trùng màu X/A/M/Q của Hình 2a   # màu kiểu VESTA (Se vàng-lục, As tím)
 RAD = {"Se": .55, "Al": .48, "Sn": .62, "As": .55}
 TY = {"I": "#4C72B0", "II": "#DD8452", "III": "#8172B3"}
-FH = 5.6; YT = 100 * FH / 7.2
-fig = plt.figure(figsize=(7.2, FH)); W = fig.add_axes([0, 0, 1, 1]); W.set_xlim(0, 100); W.set_ylim(0, YT); W.axis("off")
-def FA(x0, y0, x1, y1): return fig.add_axes([x0 / 100, y0 / YT, (x1 - x0) / 100, (y1 - y0) / YT])
-BLUE, ORG, PUR, GREY = "#1F4E9C", "#F28C28", "#1F4E9C", "#8A8F98"
+fig = plt.figure(figsize=(7.2, 6.0)); W = fig.add_axes([0, 0, 1, 1]); W.set_xlim(0, 100); W.set_ylim(0, 83.333); W.axis("off")
 def panel(y0, h, lab, title):
-    W.add_patch(FancyBboxPatch((1, y0), 98, h, boxstyle="round,pad=0,rounding_size=1.5", fc="#F3F5F8", ec="#4B5563", lw=.7, zorder=0))
-    W.text(2.6, y0 + h - 2.4, lab, fontsize=12, fontweight="bold", va="center"); W.text(5.6, y0 + h - 2.4, title, fontsize=11, va="center")
-def arrow(p1, p2, color=GREY, lw=.9):
-    W.add_patch(FancyArrowPatch(p1, p2, arrowstyle="-|>,head_length=4,head_width=2.4", lw=lw, color=color, zorder=3, shrinkA=0, shrinkB=0))
-def line(pts, color=GREY, lw=.9):
-    xs, ys = zip(*pts); W.plot(xs, ys, c=color, lw=lw, zorder=2, solid_joinstyle="miter")
-def box(x, y, w, h, ec, fc="white", ls="-", r=1.0):
-    W.add_patch(FancyBboxPatch((x, y), w, h, boxstyle=f"round,pad=0,rounding_size={r}", fc=fc, ec=ec, lw=.8, ls=ls, zorder=3))
+    W.add_patch(FancyBboxPatch((1, y0), 98, h, boxstyle="round,pad=0,rounding_size=1.5", fc="#FAFBFC", ec="#8A94A6", lw=.9, ls=(0, (4, 3)), zorder=0))
+    W.text(2.6, y0 + h - 2.6, lab, fontsize=12, fontweight="bold", va="center", color=INK); W.text(5.6, y0 + h - 2.6, title, fontsize=11.5, fontweight="bold", va="center", color=INK)
+def curved(p1, p2, rad):
+    W.add_patch(FancyArrowPatch(p1, p2, connectionstyle=f"arc3,rad={rad}", arrowstyle="-|>,head_length=5,head_width=3", lw=1.6, color=ARR, zorder=5))
+def elbow(pts, color="#7A8494", lw=.9, head=True):
+    xs, ys = zip(*pts); W.plot(xs[:-1] + (xs[-1],), ys[:-1] + (ys[-1],), c=color, lw=lw, zorder=2, solid_joinstyle="miter")
+    if head: W.add_patch(FancyArrowPatch(pts[-2], pts[-1], arrowstyle="-|>,head_length=4,head_width=2.4", lw=lw, color=color, zorder=3))
 def sphere(ax, x, y, r, col, z=3):
     c = np.array(to_rgb(col)); ax.add_patch(Circle((x, y), r, fc=c * .72, ec="none", zorder=z))
     for k in range(1, 9):
@@ -29,134 +57,139 @@ def bond(ax, p, q, c1, c2):
     m = (np.array(p) + np.array(q)) / 2
     for a, b, cc in ((p, m, c1), (m, q, c2)):
         ax.plot([a[0], b[0]], [a[1], b[1]], c=cc, lw=3.0, solid_capstyle="butt", zorder=2, path_effects=[pe.Stroke(linewidth=3.8, foreground="#555"), pe.Normal()])
-
-BT, OT = "#E4ECF8", "#FDEBD7"           # tints
-PA0, PAH = 41.0, YT - 42.5
-panel(PA0, PAH, "a", "DFT data")
-panel(1.5, 38.0, "b", "Models, frozen and tested")
-xs0, bw, gap = 2.4, 22.4, 1.95; CX = [xs0 + k * (bw + gap) for k in range(4)]
-CY0, CH = PA0 + 7.0, 6.6                  # chevrons
-IY0, IY1 = CY0 + CH + 3.0, PA0 + PAH - 6.6
-SH = ["#7FA3D9", "#5584C8", "#3767B4", "#1F4E9C"]
-LAB = [("108", "monolayers"), ("7 796", "interfaces"), ("832", "heterostructures"), ("599", "fitting set")]
-from matplotlib.patches import Polygon
-for k in range(4):
-    x = CX[k]; tip = 2.2; x1 = x + bw + (gap - .3 if k < 3 else 0)
-    pts = [(x, CY0), (x1 - tip, CY0), (x1, CY0 + CH / 2), (x1 - tip, CY0 + CH), (x, CY0 + CH)] + ([(x + tip, CY0 + CH / 2)] if k else [])
-    W.add_patch(Polygon(pts, closed=True, fc=SH[k], ec="white", lw=1.2, zorder=3))
-    W.text(x + (tip if k else 0) + 1.6, CY0 + CH / 2, LAB[k][0], color="white", fontweight="bold", va="center", zorder=4)
-    W.text(x + (tip if k else 0) + 1.6 + 1.25 * len(LAB[k][0]) + 1.2, CY0 + CH / 2, LAB[k][1], color="white", va="center", zorder=4)
-TK = "#374151"
-def tile(x0, y0, x1, y1, z=1):
-    W.add_patch(FancyBboxPatch((x0, y0), x1 - x0, y1 - y0, boxstyle="round,pad=0,rounding_size=0.8", fc="white", ec=TK, lw=.7, zorder=z))
-for k in range(4):
-    tile(CX[k], IY0 - 1.4, CX[k] + bw, IY1 + 1.6)
-    W.add_patch(Circle((CX[k] + 1.9, IY1 + 1.6 - 1.9), 1.15, fc=BLUE, ec="none", zorder=6)); W.text(CX[k] + 1.9, IY1 + 1.6 - 1.9, str(k + 1), ha="center", va="center", color="white", fontweight="bold", zorder=7)
-# ---- pictogram 1: monolayer + face levels (no axes)
-at = [a for a in read("../expand/S3.extxyz", ":") if a.info["name"] == "SeAlSnAs"][0]
-c = at.cell; z0 = at.positions[:, 2].min()
-a1 = FA(CX[0] + 1.5, IY0, CX[0] + 11.0, IY1); a1.axis("off"); a1.set_aspect("equal")
+panel(38.5, 43.33, "a", "Data generation: monolayers, interfaces and DFT heterostructures")
+panel(1.5, 35.5, "b", "Regression models fitted on the 599 interfaces, frozen, then tested")
+# ---------- (a1) VESTA-like side view
+at = {a.info["name"]: a for a in read("../expand/S3.extxyz", ":") if a.info["name"] == "SeAlSnAs"}["SeAlSnAs"]
+c = at.cell; pos = at.positions; sym = at.get_chemical_symbols(); z0 = pos[:, 2].min()
+a1 = fig.add_axes([0.03, 0.6298, 0.17, 0.2970]); a1.set_xticks([]); a1.set_yticks([]); a1.set_aspect("equal")
 sc = at.repeat((4, 4, 1)); R = sc.positions.copy(); R[:, 0] -= c[0, 0] * 1.5 + c[1, 0] * 1.5; R[:, 1] -= c[1, 1] * 1.5; R[:, 2] -= z0; SY = sc.get_chemical_symbols()
 keep = (R[:, 1] > -0.2) & (R[:, 1] < c[1, 1] - 0.2) & (R[:, 0] > -0.6) & (R[:, 0] < 2 * c[0, 0] - 0.4)
 from scipy.spatial.distance import cdist
 Dm = cdist(R, R); seen = set()
 for i in np.where(keep)[0]:
     for j in np.where((Dm[i] > 2.0) & (Dm[i] < 3.05))[0]:
-        if (j, i) in seen or not keep[j]: continue
-        seen.add((i, j)); bond(a1, (R[i, 0], R[i, 2]), (R[j, 0], R[j, 2]), EL[SY[i]], EL[SY[j]])
-for i in np.argsort(R[:, 1])[::-1]:
+        if (j, i) in seen: continue
+        seen.add((i, j)); keep_j = keep[j]
+        if not keep_j: continue
+        bond(a1, (R[i, 0], R[i, 2]), (R[j, 0], R[j, 2]), EL[SY[i]], EL[SY[j]])
+order = np.argsort(R[:, 1])[::-1]
+for i in order:
     if keep[i]: sphere(a1, R[i, 0], R[i, 2], RAD[SY[i]], EL[SY[i]])
-a1.set_xlim(-1.4, 2 * c[0, 0] - 0.2); a1.set_ylim(-2.4, 7.4)
-a1.text(-1.3, 5.2, "Q", fontsize=8, color="#C04A7A", fontweight="bold"); a1.text(-1.3, 0, "X", fontsize=8, color="#B86A12", fontweight="bold")
+for xc in (0, c[0, 0]): a1.plot([xc, xc], [-2.2, 7.2], c="k", lw=.6, zorder=1)
+a1.set_xlim(-1.4, 2 * c[0, 0] - 0.2); a1.set_ylim(-2.2, 7.2)
+a1.text(c[0, 0] / 2, 6.3, "Q", ha="center", fontsize=9.4, fontweight="bold", color="#C04A7A"); a1.text(c[0, 0] / 2, -1.6, "X", ha="center", fontsize=9.4, fontweight="bold", color="#E08E2B")
+
+# ---------- (a2) face-resolved levels: Origin frame
 M = pd.read_csv("../res4/mono_strain.csv"); m0 = M[(M.name == "SeAlSnAs") & (M.strain == 0)].iloc[0]
-a2 = FA(CX[0] + 12.2, IY0, CX[0] + bw - .4, IY1); a2.axis("off"); a2.set_xlim(-.6, 2.3); a2.set_ylim(-7.3, -2.4)
+a2 = fig.add_axes([0.26, 0.6658, 0.125, 0.2295])
 for k, f in enumerate(("X", "Q")):
     vb, cb = -m0[f"IP_{f}"], -m0[f"EA_{f}"]
-    a2.add_patch(Rectangle((k - .32, vb - 1.1), .64, 1.1, fc=BLUE, ec="none")); a2.add_patch(Rectangle((k - .32, cb), .64, 1.1, fc=ORG, ec="none"))
-    a2.text(k, -7.2, f, ha="center", va="bottom")
-a2.plot([.32, 1.62], [-m0.IP_X] * 2, c="k", lw=.5, ls=":"); a2.plot([1.32, 1.62], [-m0.IP_Q] * 2, c="k", lw=.5, ls=":")
-a2.annotate("", xy=(1.55, -m0.IP_Q), xytext=(1.55, -m0.IP_X), arrowprops=dict(arrowstyle="-|>", lw=.6, mutation_scale=5, shrinkA=0, shrinkB=0)); a2.text(1.7, (-m0.IP_Q - m0.IP_X) / 2 + .9, r"$\Delta E_{vac}$", va="center")
-# ---- pictogram 2: four contacts
-EC = ["Se", "Al", "Sn", "As"]
-a3 = FA(CX[1] + 1.2, IY0, CX[1] + bw - 1.0, IY1); a3.axis("off"); a3.set_aspect("equal"); a3.set_xlim(0, 4.4); a3.set_ylim(-.75, 2.55)
+    a2.add_patch(Rectangle((k - .3, vb - 1.2), .6, 1.2, fc="#9DB7DA", ec="k", lw=.4)); a2.add_patch(Rectangle((k - .3, cb), .6, 1.2, fc="#F4C6A5", ec="k", lw=.4))
+    a2.plot([k - .38, k + .38], [(vb + cb) / 2] * 2, c="k", ls="--", lw=.6)
+a2.set_xlim(-.6, 2.0); a2.set_ylim(-6.6, -2.6); a2.set_xticks([0, 1]); a2.set_xticklabels(["X", "Q"]); a2.tick_params(axis="x", which="both", top=False)
+a2.set_ylabel(r"E − E$_{vac}$ (eV)", fontsize=8.1, labelpad=1); a2.tick_params(labelsize=7.5, length=2.5); a2.minorticks_on(); a2.tick_params(axis="x", which="minor", bottom=False, top=False)
+a2.annotate("", xy=(1.45, -m0.IP_Q), xytext=(1.45, -m0.IP_X), arrowprops=dict(arrowstyle="<->", lw=.6)); a2.text(1.75, (-m0.IP_Q - m0.IP_X) / 2, r"$\Delta E_{vac}$", fontsize=7.5, rotation=90, va="center", ha="center")
+
+# ---------- (a3) four contacts
+ROW = [("X", EL["Se"]), ("A", EL["Al"]), ("M", EL["Sn"]), ("Q", EL["As"])]
+a3 = fig.add_axes([0.435, 0.6478, 0.19, 0.2430]); a3.set_xticks([]); a3.set_yticks([]); a3.set_aspect("equal"); a3.set_xlim(0, 4.4); a3.set_ylim(-.65, 2.6)
+ROW = ["Se", "Al", "Sn", "As"]
 for i, nm in enumerate(("XX", "XQ", "QX", "QQ")):
     for (y0, up) in ((0, nm[0]), (1.25, "Q" if nm[1] == "X" else "X")):
-        seq = EC[::-1] if up == "X" else EC
+        seq = ROW[::-1] if up == "X" else ROW
         for k, e in enumerate(seq):
             for n in range(3):
+                xx = i * 1.1 + .22 + n * .3 + (.15 if k % 2 else 0); yy = y0 + .1 + k * .26
                 if n == 2 and k % 2: continue
-                sphere(a3, i * 1.1 + .22 + n * .3 + (.15 if k % 2 else 0), y0 + .1 + k * .26, .11 if e != "Al" else .09, EL[e])
-    a3.add_patch(Rectangle((i * 1.1 + .05, 1.0), .95, .3, fc="none", ec=ORG, lw=.9))
-    a3.text(i * 1.1 + .52, -.55, nm, ha="center")
-# ---- pictogram 3: potential step (no ticks)
-a4 = FA(CX[2] + 4.0, IY0 + 1.6, CX[2] + bw - 1.6, IY1 - .4); a4.spines["top"].set_visible(False); a4.spines["right"].set_visible(False); z = np.linspace(0, 45, 600)
-V = 1.3 * np.tanh((z - 22.5) / .6) - 7 * (np.exp(-((z - 17) / 1.4) ** 2) + np.exp(-((z - 28) / 1.4) ** 2)) - 3.5 * (np.exp(-((z - 19.5) / .9) ** 2) + np.exp(-((z - 25.5) / .9) ** 2))
-a4.fill_between(z, V, -8.6, color=BT, lw=0); a4.plot(z, V, c=BLUE, lw=1.0); a4.set_xlim(0, 45); a4.set_ylim(-8.6, 3.4)
-a4.set_xticks([]); a4.set_yticks([]); a4.set_xlabel("z", labelpad=1); a4.set_ylabel(r"$\bar V$", labelpad=1)
-a4.plot([1, 43], [-1.3, -1.3], c="k", lw=.5, ls=":"); a4.annotate("", xy=(40.5, 1.3), xytext=(40.5, -1.3), arrowprops=dict(arrowstyle="<->", lw=.8, color=ORG, shrinkA=0, shrinkB=0)); a4.text(39.0, 0, r"$\Delta\Phi_{bi}$", color=ORG, ha="right", va="center")
-# ---- pictogram 4: three alignment types
-a5 = FA(CX[3] + 1.2, IY0, CX[3] + bw - .8, IY1); a5.axis("off"); a5.set_xlim(0, 3); a5.set_ylim(-1.4, 3.0)
-ALN = {"I": ((0, 2.2), (.5, 1.7)), "II": ((0, 1.6), (.7, 2.4)), "III": ((0, .9), (1.2, 2.2))}
-for k, t in enumerate(("I", "II", "III")):
-    (v1, c1), (v2, c2) = ALN[t]; x = k + .5
-    for dx, v, cc in ((-.38, v1, c1), (.04, v2, c2)):
-        a5.add_patch(Rectangle((x + dx, v - .55), .34, .55, fc=BLUE, ec="none")); a5.add_patch(Rectangle((x + dx, cc), .34, .55, fc=ORG, ec="none"))
-    a5.text(x, -1.05, t, ha="center")
-# ---- MACE (auxiliary) tags and independent test sets
-def gtag(x, y, txt):
-    W.text(x, y, txt, ha="center", va="center", color="0.35", fontsize=6.5, zorder=5,
-           bbox=dict(boxstyle="round,pad=0.25,rounding_size=0.6", fc="white", ec="0.55", lw=.6, ls=(0, (2, 1.5))))
-gtag(CX[0] + bw / 2, PA0 + 3.6, "MACE: phonon check")
-gtag(CX[2] + 5.5, PA0 + 3.6, "MACE: stacking scan")
-W.add_patch(FancyArrowPatch((CX[2] + bw - 2, CY0), (CX[3] + 5.0, PA0 + 3.6 + 1.3), connectionstyle="arc3,rad=0.25", arrowstyle="-|>,head_length=4,head_width=2.4", lw=.9, color=BLUE, ls=(0, (3, 2)), zorder=3))
-W.text(CX[3] + 13.5, PA0 + 3.6, "59 blind + 102 transfer", ha="center", va="center", color=BLUE, fontsize=6.5, zorder=5,
-       bbox=dict(boxstyle="round,pad=0.3,rounding_size=0.6", fc=BT, ec=BLUE, lw=.7, ls=(0, (3, 2))))
+                sphere(a3, xx, yy, .11 if e != "Al" else .09, EL[e])
+    a3.add_patch(Rectangle((i * 1.1 + .05, 1.0), .95, .3, fc="none", ec="#C0392B", lw=.8, ls=":"))
+    a3.text(i * 1.1 + .52, -.45, nm, ha="center", fontsize=8.5, fontweight="bold", color=INK)
 
-# ================= panel b
-tile(2.2, 2.8, 17.0, 35.4); tile(19.4, 2.8, 30.6, 35.4); tile(32.8, 2.8, 63.2, 35.4); tile(65.0, 2.8, 98.6, 35.4)
-T = pd.read_csv("train_oof.csv"); D = pd.read_csv("../ana2/all/pred_final.csv")
-chips = [r"$\Delta E_m$", r"$E_{g,1}+E_{g,2}$", r"$m_v,\ m_c$", r"$s_1,\ s_2$", r"$\chi_1+\chi_2$"]
-W.text(9.6, 33.3, "monolayer inputs", ha="center")
-ys = [28.9 - k * 5.4 for k in range(5)]
+# ---------- (a4) database
+W.add_patch(Rectangle((66.3, 61.11), 6.6, 7.5, fc="#CFDDF0", ec="#2F5DA8", lw=.8))
+for yy in (52.5, 55, 57.5): W.add_patch(Ellipse((69.6, yy + 8.61), 6.6, 1.7, fc="#CFDDF0", ec="#2F5DA8", lw=.8))
+W.add_patch(Ellipse((69.6, 68.61), 6.6, 1.7, fc="#A9C3E8", ec="#2F5DA8", lw=.8))
+W.text(69.6, 59.21, "DFT database", ha="center", va="top", fontsize=7.8, color=INK)
+adb = fig.add_axes([64.2 / 100, 56.4 / 83.333, 10.8 / 100, 14.6 / 83.333]); adb.patch.set_alpha(0); adb.set_xticks([]); adb.set_yticks([])
+# ---------- (a5) DFT potential: Origin frame
+a4 = fig.add_axes([0.805, 0.6793, 0.165, 0.2205]); z = np.linspace(0, 45, 600)
+V = 4.4 + .6 * np.tanh((z - 22.5) / .6) - 7 * (np.exp(-((z - 17) / 1.4) ** 2) + np.exp(-((z - 28) / 1.4) ** 2)) - 3.5 * (np.exp(-((z - 19.5) / .9) ** 2) + np.exp(-((z - 25.5) / .9) ** 2))
+V = V - 4.4 + .0
+a4.plot(z, V, c="#2E9E62", lw=1.0); a4.set_xlim(0, 45); a4.set_ylim(-8.5, 2.5); a4.minorticks_on()
+a4.set_xlabel("z (Å)", fontsize=8.1, labelpad=1); a4.set_ylabel(r"$\bar V$ (eV)", fontsize=8.1, labelpad=1); a4.tick_params(labelsize=7.5, length=2.5)
+a4.plot([2, 41], [-.6, -.6], c="k", lw=.4, ls=":"); a4.annotate("", xy=(40, .6), xytext=(40, -.6), arrowprops=dict(arrowstyle="<->", lw=.6, shrinkA=0, shrinkB=0)); a4.text(29, 1.1, r"$\Delta\Phi_{bi}$", fontsize=7.5)
+
+# curved arrows (over / under alternating)
+curved((17.5, 76.61), (26.5, 76.61), -0.35); curved((36.8, 54.61), (43.5, 54.61), 0.45); curved((62.8, 72.61), (66.0, 70.11), -0.45); curved((73.5, 70.11), (79.5, 72.61), -0.45)
+
+# ---------- (a) numbered pipeline with counts and the two roles of MACE
+STEPS = [("1", "108 monolayers", "all X–A–M–Q, DFT relaxed;\nface-resolved IP and EA"),
+         ("2", "7 796 interfaces", "4 contacts per pair, lattice-\nmatched (≤ 3%) of 23 112"),
+         ("3", "832 heterostructures", "lowest stacking, DFT relaxed;\ndipole, layer band edges"),
+         ("4", "599 fitting set", "both layers gapped; all\nvalues in steps 1–4 from DFT")]
+SY0 = 39.6; bw, bh, gap = 22.4, 8.2, 1.95; xs0 = 2.4
+for k, (n, ttl, sub) in enumerate(STEPS):
+    x = xs0 + k * (bw + gap)
+    W.add_patch(FancyBboxPatch((x, SY0), bw, bh, boxstyle="round,pad=0,rounding_size=1.0", fc="white", ec="#2F5DA8", lw=.8, zorder=3))
+    W.add_patch(Circle((x + 2.3, SY0 + bh - 2.2), 1.5, fc="#2F5DA8", ec="none", zorder=4))
+    W.text(x + 2.3, SY0 + bh - 2.2, n, ha="center", va="center", color="white", fontsize=8, fontweight="bold", zorder=5)
+    W.text(x + 4.5, SY0 + bh - 2.2, ttl, va="center", fontsize=8.5, fontweight="bold", color=INK, zorder=5)
+    W.text(x + 1.3, SY0 + 2.5, sub, va="center", fontsize=6.6, color=MUTE, linespacing=1.15, zorder=5)
+    if k < 3: W.add_patch(FancyArrowPatch((x + bw + .2, SY0 + bh / 2), (x + bw + gap - .2, SY0 + bh / 2), arrowstyle="-|>,head_length=4,head_width=2.4", lw=1.1, color=ARR, zorder=5))
+def tag(x, y, txt):
+    W.add_patch(FancyBboxPatch((x, y), bw, 5.0, boxstyle="round,pad=0,rounding_size=0.8", fc="#FDF2E9", ec="#E08E2B", lw=.7, ls=(0, (3, 2)), zorder=3))
+    W.text(x + bw / 2, y + 2.5, txt, linespacing=1.1, ha="center", va="center", fontsize=6.4, color="#9A5512", zorder=4)
+tag(xs0, SY0 + bh + .7, "fine-tuned MACE: phonons of\nall 108 (check, no filtering)")
+tag(xs0 + 2 * (bw + gap), SY0 + bh + .7, "MACE-MP-0 rigid scan:\nstacking pre-selection")
+W.add_patch(FancyBboxPatch((xs0 + 3 * (bw + gap), SY0 + bh + .7), bw, 5.0, boxstyle="round,pad=0,rounding_size=0.8", fc="#EAF0FA", ec="#2F5DA8", lw=.7, ls=(0, (3, 2)), zorder=3))
+W.text(xs0 + 3 * (bw + gap) + bw / 2, SY0 + bh + 3.2, "+ 59 blind, 102 transfer interfaces\n(same DFT protocol, never fitted)", linespacing=1.1, ha="center", va="center", fontsize=6.4, color="#2F5DA8", zorder=4)
+# ---------- (b) chips -> hub (elbow), hub -> outputs (elbow)
+chips = [r"$\Delta E_m$ (face)", r"$E_{g,1}+E_{g,2}$", r"$m_v, m_c$ (DOS)", r"$s_1, s_2$ (dipole)", r"$\chi_1+\chi_2$ (contact)"]
+ys = [27.5 - k * 5.0 for k in range(5)]; HX, HY, HR = 35, 17.5, 7.4
+W.text(12.5, 30.7, "monolayer inputs", ha="center", fontsize=8.5, fontweight="bold", color=INK)
 for y, ch in zip(ys, chips):
-    box(3.0, y - 1.8, 13.0, 3.6, BLUE, fc=BT, r=1.6); W.text(9.5, y, ch, ha="center", va="center", zorder=4)
-    line([(16.0, y), (18.0, y)])
-line([(18.0, ys[0]), (18.0, ys[-1])])
-MXc, MR = 25.0, 3.6
-MOD = [(26.0, "S(contact)"), (18.0, "ML"), (8.6, "classifier")]
-for y, t in MOD:
-    W.add_patch(Circle((MXc, y), MR, fc=ORG, ec="none", zorder=3)); W.text(MXc, y, t, ha="center", va="center", color="white", fontweight="bold", zorder=4)
-    arrow((18.0, y), (MXc - MR, y))
-W.text(MXc, 33.3, "models", ha="center")
-# mini plots
-pA = FA(36.0, 18.6, 47.0, 30.4)
-for cc in ("XX", "QX", "QQ"):
-    d = T[T.contact == cc]; pA.scatter(d.oof_hyb, d.eVh_B, s=1.2, c=BLUE, lw=0, alpha=.55)
-pA.plot([-.8, .8], [-.8, .8], c=ORG, lw=.8); pA.set_xlim(-.8, .8); pA.set_ylim(-.8, .8); pA.set_xticks([]); pA.set_yticks([])
-pA.set_xlabel("predicted", labelpad=1); pA.set_ylabel("DFT", labelpad=2)
-W.text(41.5, 33.3, r"dipole  $r^2$ = 0.94", ha="center")
-pB = FA(36.0, 6.0, 47.0, 14.4)
-bins = np.linspace(0, 1, 21); pB.hist(D.w_min[D.w_min < .6], bins=bins, color="0.7"); pB.hist(D.w_min[D.w_min >= .6], bins=bins, color=BLUE)
-pB.axvline(.6, c=ORG, lw=.8); pB.set_xticks([]); pB.set_yticks([]); pB.set_xlabel(r"$w_{min}$", labelpad=1)
-W.text(41.5, 15.6, "regime  AUC = 0.87", ha="center")
-for y0_, y1_ in ((26.0, 22.0), (18.0, 22.0)): line([(MXc + MR, y0_), (31.7, y0_), (31.7, y1_)])
-arrow((31.7, 22.0), (36.0, 22.0)); arrow((MXc + MR, 8.6), (36.0, 8.6))
-# type node
-TXc, TY0 = 55.5, 17.0
-line([(47.0, 25.5), (51.0, 25.5), (51.0, TY0 + 1.5)]); line([(47.0, 8.6), (51.0, 8.6), (51.0, TY0 - 1.5)]); arrow((51.0, TY0), (52.0, TY0))
-box(52.0, TY0 - 7.0, 9.5, 14.0, ORG, fc=OT, r=1.2)
-for dx, (v, cc) in ((-2.1, (TY0 - 1.8, TY0 + .4)), (.2, (TY0 - .4, TY0 + 1.9))):
-    W.add_patch(Rectangle((TXc + dx + .6, v - 2.4), 1.8, 2.4, fc=BLUE, ec="none", zorder=4)); W.add_patch(Rectangle((TXc + dx + .6, cc), 1.8, 2.4, fc=ORG, ec="none", zorder=4))
-W.text(56.75, TY0 + 8.6, "type + margin", ha="center", va="center", zorder=5)
-W.text(56.75, TY0 - 8.6, "1 105 confident", ha="center", va="center", zorder=5, fontsize=6.5)
-arrow((61.5, TY0), (65.5, TY0))
-# frozen-model tests as bars
-pC = FA(70.5, 10.0, 97.2, 29.6)
-cat = ["CV", "pair\nout", "mono.\nout", "shuffled", "blind"]; val = [.94, .93, .91, -.20, .88]; col = [BLUE, BLUE, BLUE, "0.7", ORG]
-pC.bar(range(5), val, .62, color=col)
-for i, v in enumerate(val): pC.text(i, v + (.03 if v > 0 else -.1), f"{v:.2f}".replace("-", "−"), ha="center", va="bottom")
-pC.axhline(0, c="k", lw=.5); pC.set_xticks(range(5)); pC.set_xticklabels(cat); pC.set_ylim(-.35, 1.12); pC.set_yticks([0, .5, 1])
-pC.set_ylabel(r"dipole $r^2$", labelpad=1); pC.tick_params(axis="x", length=0)
-W.text(81.8, 33.3, "frozen-model tests", ha="center")
-W.text(81.8, 4.4, "type accuracy (localized): 0.90 CV, 0.71 blind", ha="center", fontsize=6.5, color="0.3")
-fig.savefig("fig0_workflow7.pdf"); fig.savefig("fig/fig0_workflow7.png", dpi=220)
+    W.add_patch(FancyBboxPatch((4, y - 1.6), 16.5, 3.2, boxstyle="round,pad=0,rounding_size=1.2", fc="white", ec="#3A86C8", lw=.8, zorder=3))
+    W.text(12.25, y, ch, ha="center", va="center", fontsize=8.2, color=INK, zorder=4)
+    W.plot([20.5, 24.5], [y, y], c="#7A8494", lw=.9, zorder=2)
+W.plot([24.5, 24.5], [ys[0], ys[-1]], c="#7A8494", lw=.9, zorder=2)           # thanh góp (bus)
+elbow([(24.5, HY), (HX - HR - .3, HY)])
+cols = ["#2F5DA8", "#3A86C8", "#2E9E62", "#C8D93A", "#E08E2B", "#C0392B", "#8E44AD", "#5B6FD0"]
+for k in range(8): W.add_patch(Wedge((HX, HY), HR, k * 45, (k + 1) * 45, width=.9, fc=cols[k], ec="none", alpha=.9, zorder=3))
+W.add_patch(Circle((HX, HY), HR - .9, fc="white", ec="none", zorder=3))
+W.text(HX, HY + 3.0, "models", ha="center", va="center", fontweight="bold", color=INK, zorder=4)
+W.text(HX - 4.6, HY - .7, "1  S(contact)\n2  ML correction\n3  classifier", ha="left", va="center", linespacing=1.15, color=INK, zorder=4)
+outs = [("Interface dipole  (1 + 2)", 27.5, "r² = 0.94 (CV)"), ("Hybridization regime  (3)", 17.5, "AUC = 0.87 (CV)"), ("Alignment type  (1–3 + gaps)", 7.5, "1 105 confident of 7 796")]
+W.plot([HX + HR, 46.0], [HY, HY], c="#7A8494", lw=.9, zorder=2); W.plot([46.0, 46.0], [outs[0][1], outs[2][1]], c="#7A8494", lw=.9, zorder=2)
+T = pd.read_csv("train_oof.csv"); D = pd.read_csv("../ana2/all/pred_final.csv"); A = pd.read_csv("pred7796_hyb.csv"); A = A[A.conf]
+for k, (name, y, stat) in enumerate(outs):
+    elbow([(46.0, y), (49.8, y)])
+    ax = fig.add_axes([0.50, (y - 4.2) / 83.333, 0.085, 8.4 / 83.333]); ax.tick_params(labelsize=5.6, length=1.8, pad=1); ax.minorticks_on()
+    if k == 0:
+        for cc, col in (("XX", "#2F5DA8"), ("QX", "#2E9E62"), ("QQ", "#C0392B")):
+            d = T[T.contact == cc]; ax.scatter(d.oof_hyb, d.eVh_B, s=.8, c=col, lw=0)
+        ax.plot([-.8, .8], [-.8, .8], c="k", lw=.5); ax.set_xlim(-.8, .8); ax.set_ylim(-.8, .8)
+    elif k == 1:
+        ax.hist(D.w_min[D.contact == "XX"], bins=12, color="#2F5DA8", alpha=.6); ax.hist(D.w_min[D.contact == "QQ"], bins=12, color="#C0392B", alpha=.6)
+    else:
+        for t in ("I", "II", "III"):
+            d = A[A.type_hyb == t]; ax.scatter(d.dE.abs(), d.Eg1 + d.Eg2, s=.5, c=TY[t], lw=0)
+        ax.set_xlim(0, 2.5)
+    ax.set_xticklabels([]); ax.set_yticklabels([])
+    W.text(59.3, y + 1.4, name, fontsize=8.0, fontweight="bold", color=INK, va="center"); W.text(59.3, y - 1.4, stat, fontsize=7.5, color=MUTE, va="center")
+    elbow([(78.6, y), (79.8, y)], head=False)
+W.plot([79.8, 79.8], [outs[0][1], outs[2][1]], c="#7A8494", lw=.9, zorder=2); elbow([(79.8, HY), (80.4, HY)])
+# ---------- validation card (table)
+x0, y0, w, h = 80.4, 3.0, 18.4, 28.4
+W.add_patch(FancyBboxPatch((x0, y0), w, h, boxstyle="round,pad=0,rounding_size=1.0", fc="white", ec="#8E44AD", lw=.9, zorder=3))
+W.add_patch(FancyBboxPatch((x0, y0 + h - 3.4), w, 3.4, boxstyle="round,pad=0,rounding_size=1.0", fc="#8E44AD", ec="#8E44AD", lw=.9, zorder=4))
+W.add_patch(Rectangle((x0, y0 + h - 3.4), w, 1.2, fc="#8E44AD", ec="none", zorder=4))
+W.text(x0 + w / 2, y0 + h - 1.7, "FROZEN-MODEL TESTS", ha="center", va="center", color="white", fontsize=8.2, fontweight="bold", zorder=5)
+W.text(x0 + 1.0, y0 + h - 5.4, "test", fontsize=7.5, color=MUTE, zorder=5); W.text(x0 + w - 1.0, y0 + h - 5.4, "value", fontsize=7.5, color=MUTE, ha="right", zorder=5)
+rows = [("CV (pair), r²", "0.94"), ("pair hold-out, r²", "0.93"), ("monolayer out, r²", "0.91"), ("shuffled, r²", "−0.20"), ("blind (59), r²", "0.88"), ("blind (59), type acc.*", "0.71"), ("transfer (102), Pn rule", "✓")]
+for k, (a, b) in enumerate(rows):
+    yy = y0 + h - 8.0 - k * 2.7
+    if k % 2 == 0: W.add_patch(Rectangle((x0 + .3, yy - 1.3), w - .6, 2.6, fc="#F4EEF9", ec="none", zorder=4))
+    W.text(x0 + .8, yy, a, fontsize=6.9, va="center", color=INK, zorder=5); W.text(x0 + w - .8, yy, b, fontsize=6.9, va="center", ha="right", color="#8E44AD" if k != 3 else MUTE, fontweight="bold", zorder=5)
+W.text(x0 + .8, y0 + 1.2, "*localized regime (CV 0.90)", fontsize=6.0, color=MUTE, va="center", zorder=5)
+_boldticks(fig); fig.savefig("fig0_workflow8.pdf"); fig.savefig("fig/fig0_workflow8.png", dpi=220)
