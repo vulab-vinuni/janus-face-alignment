@@ -104,12 +104,9 @@ axs = [figM.add_subplot(gM[0, 0]), figS.add_subplot(gS[0, 0:2]), figM.add_subplo
        figS.add_subplot(gS[1, 1:3]), figM.add_subplot(gM[1, 0]), figM.add_subplot(gM[1, 1]), figS.add_subplot(gS[1, 3:5])]
 fig = figM
 ax = axs[0]
-CA = {"XX": "#2F6DB5", "QX": "#D46A9F", "QQ": "#404040"}
-for c in ("XX", "QX", "QQ"):
-    v = D[D.contact == c].w_min; ax.hist(v, bins=np.linspace(0, 1, 21), color=CA[c], alpha=.13, lw=0)
-    ax.hist(v, bins=np.linspace(0, 1, 21), histtype="step", color=CA[c], lw=1.4, label=f"{LB[c]}  (median {v.median():.2f})")
-    ax.axvline(v.median(), color=CA[c], ls="--", lw=.9, ymax=.9)
-ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 62), xlim=(0, 1)); ax.legend(loc="upper right", fontsize=8.0, handlelength=1.4, frameon=False)
+CA = {"XX": "#2F6DB5", "QX": "#D46A9F", "QQ": "#5A5A5A"}
+for c in ("XX", "QX", "QQ"): ax.hist(D[D.contact == c].w_min, bins=np.linspace(0, 1, 21), color=CA[c], alpha=.55, label=LB[c], edgecolor="k", lw=.3)
+ax.set(xlabel=r"$w_{min}$", ylabel="count", ylim=(0, 60)); ax.legend(loc="upper right", fontsize=8.0)
 th = np.arange(0, .86, .05); ax = axs[1]
 ax.plot(th, [np.abs(D.vbo_dft - D.vbo_and)[D.w_min >= t].mean() for t in th], "s-", c="#7F7F7F", ms=3, mfc="w", label="Anderson")
 ax.plot(th, [np.abs(D.vbo_dft - D.vbo_glr)[D.w_min >= t].mean() for t in th], "o-", c="k", ms=3, label="S(contact) model")
