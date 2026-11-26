@@ -69,7 +69,7 @@ for x0_, x1_ in _TX:
 # ---------- (a1) VESTA-like side view
 at = {a.info["name"]: a for a in read("../expand/S3.extxyz", ":") if a.info["name"] == "SeAlSnAs"}["SeAlSnAs"]
 c = at.cell; pos = at.positions; sym = at.get_chemical_symbols(); z0 = pos[:, 2].min()
-a1 = fig.add_axes([0.03, 0.80, 0.20, 0.125]); a1.axis("off"); a1.set_aspect("equal")
+a1 = fig.add_axes([0.03, 0.80, 0.20, 0.125]); a1.set_visible(False); a1.axis("off"); a1.set_aspect("equal")
 sc = at.repeat((4, 4, 1)); R = sc.positions.copy(); R[:, 0] -= c[0, 0] * 1.5 + c[1, 0] * 1.5; R[:, 1] -= c[1, 1] * 1.5; R[:, 2] -= z0; SY = sc.get_chemical_symbols()
 keep = (R[:, 1] > -0.2) & (R[:, 1] < c[1, 1] - 0.2) & (R[:, 0] > -0.6) & (R[:, 0] < 2 * c[0, 0] - 0.4)
 from scipy.spatial.distance import cdist
@@ -88,7 +88,7 @@ a1.text(c[0, 0] / 2, 6.3, "Q", ha="center", fontsize=9.4, fontweight="bold", col
 
 # ---------- (a2) face-resolved levels: Origin frame
 M = pd.read_csv("../res4/mono_strain.csv"); m0 = M[(M.name == "SeAlSnAs") & (M.strain == 0)].iloc[0]
-a2 = fig.add_axes([0.034, 0.664, 0.198, 0.132]); a2.axis("off")
+a2 = fig.add_axes([0.034, 0.668, 0.198, 0.252]); a2.axis("off")
 FC = {"X": "#D9822B", "Q": "#C04A7A"}; XC = {"X": 0.0, "Q": 1.7}; hw = .3
 from matplotlib.colors import to_rgb as _rgb
 def _t(c, f): r = np.array(_rgb(c)); return tuple(r + (1 - r) * f)
@@ -124,15 +124,23 @@ for i, nm in enumerate(("XX", "XQ", "QX", "QQ")):
     a3.text(i * 1.1 + .52, -.45, nm, ha="center", fontsize=8.5, fontweight="bold", color=INK)
 
 # ---------- (a4) database
-DBC = ["#2E4A7D", "#3E5F99", "#5277B5"]
-for k_, y_ in enumerate((59.6, 63.4, 67.2)):
-    col_ = DBC[k_]; side_ = _t(col_, .55)
-    W.add_patch(Rectangle((81.9, y_), 9.5, 3.0, fc=side_, ec=col_, lw=.8, zorder=2))
-    W.add_patch(Ellipse((86.65, y_), 9.5, 2.2, fc=side_, ec=col_, lw=.8, zorder=1.9))
-    W.add_patch(Ellipse((86.65, y_ + 3.0), 9.5, 2.2, fc=_t(col_, .25), ec=col_, lw=.8, zorder=2.1))
-    for dx_ in (-2.6, -1.4):
-        W.add_patch(Circle((86.65 + 3.4 + dx_ * 0 + (dx_ + 2.0), y_ + 1.4), .32, fc=col_, ec="none", zorder=2.2))
-W.text(86.65, 57.3, "DFT database (599)", ha="center", va="top", fontsize=7.8, color=INK)
+def _db(cx, y0, w, col, h=2.6, g=.7, e=2.3, pad=0.0, fc_override=None, z=3):
+    tt = np.linspace(0, np.pi, 40); hw_ = w / 2 + pad; c_ = fc_override or col
+    ytop = y0 + 3 * h + 2 * g
+    W.add_patch(Rectangle((cx - hw_, y0), 2 * hw_, ytop - y0, fc=c_, ec="none", zorder=z))
+    W.add_patch(Ellipse((cx, y0), 2 * hw_, e + 2 * pad, fc=c_, ec="none", zorder=z))
+    W.add_patch(Ellipse((cx, ytop), 2 * hw_, e + 2 * pad, fc=c_, ec="none", zorder=z))
+    if fc_override: return
+    W.add_patch(Ellipse((cx, ytop), .78 * w, .62 * e, fc="white", ec="none", zorder=z + .2))
+    for k in (1, 2):
+        yb = y0 + k * h + (k - 1) * g
+        lo = [(cx + w / 2 * np.cos(t), yb - e / 2 * np.sin(t)) for t in tt]
+        hi = [(cx + w / 2 * np.cos(t), yb + g - e / 2 * np.sin(t)) for t in tt[::-1]]
+        W.add_patch(Polygon(lo + hi, closed=True, fc="white", ec="none", zorder=z + .1))
+for cx_ in (82.2, 91.1): _db(cx_, 64.6, 7.6, "#2B63D0", z=3)
+_db(86.65, 60.4, 7.6, "#161B57", pad=.7, fc_override="white", z=4)
+_db(86.65, 60.4, 7.6, "#161B57", z=4.5)
+W.text(86.65, 57.6, "DFT database (599)", ha="center", va="top", fontsize=7.8, color=INK)
 adb = fig.add_axes([64.2 / 100, 56.4 / 83.333, 10.8 / 100, 14.6 / 83.333]); adb.axis("off")
 # ---------- (a5) DFT potential: Origin frame
 a4 = fig.add_axes([0.552, 0.705, 0.175, 0.205]); z = np.linspace(0, 45, 600)
@@ -220,4 +228,4 @@ for k, (a, b) in enumerate(rows):
     if k % 2 == 0: W.add_patch(Rectangle((x0 + .3, yy - 1.3), w - .6, 2.6, fc="#F4EEF9", ec="none", zorder=4))
     W.text(x0 + .8, yy, a, fontsize=6.9, va="center", color=INK, zorder=5); W.text(x0 + w - .8, yy, b, fontsize=6.9, va="center", ha="right", color="#8E44AD" if k != 3 else MUTE, fontweight="bold", zorder=5)
 W.text(x0 + .8, y0 + 1.2, "*localized regime (CV 0.90)", fontsize=6.0, color=MUTE, va="center", zorder=5)
-_boldticks(fig); fig.savefig("fig0_workflow12.pdf"); fig.savefig("fig/fig0_workflow12.png", dpi=220)
+_boldticks(fig); fig.savefig("fig0_workflow13.pdf"); fig.savefig("fig/fig0_workflow13.png", dpi=220)
