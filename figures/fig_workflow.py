@@ -92,20 +92,20 @@ a2 = fig.add_axes([0.034, 0.668, 0.198, 0.252]); a2.axis("off")
 from matplotlib.colors import to_rgb as _rgb
 def _t(c, f): r = np.array(_rgb(c)); return tuple(r + (1 - r) * f)
 cX, cQ, LC = "#1F4E9C", "#E07B1F", "#6B7280"
-dV = m0.IP_Q - m0.IP_X; vbm, cbm = -m0.IP_X, -m0.EA_X; L0, L1 = 1.5, 2.3
+dV = m0.IP_Q - m0.IP_X; vbm, cbm = -m0.IP_X, -m0.EA_X; L0, L1 = 1.65, 2.45
 a2.add_patch(Rectangle((L0, vbm - 1.1), L1 - L0, 1.1, fc=LC, ec="k", lw=.4)); a2.add_patch(Rectangle((L0, cbm), L1 - L0, 1.1, fc=_t(LC, .65), ec="k", lw=.4))
 a2.plot([L0 - .05, L1 + .05], [(vbm + cbm) / 2] * 2, c="k", lw=.8); a2.text(L0 - .1, (vbm + cbm) / 2, r"$\mathrm{E_m}$", ha="right", va="center", fontsize=7.5)
 a2.text((L0 + L1) / 2, vbm - 1.35, "monolayer", ha="center", va="top", fontsize=7.5)
 a2.plot([-.45, L0], [0, 0], c=cX, ls="--", lw=.9); a2.text(-.45, .2, r"$\mathrm{E_{vac,X}}$", ha="left", va="bottom", fontsize=7.5, color=cX)
-a2.plot([L1, 4.25], [dV, dV], c=cQ, ls="--", lw=.9); a2.text(3.1, dV + .2, r"$\mathrm{E_{vac,Q}}$", ha="center", va="bottom", fontsize=7.5, color=cQ)
+a2.plot([L1, 4.75], [dV, dV], c=cQ, ls="--", lw=.9); a2.text(3.3, dV + .2, r"$\mathrm{E_{vac,Q}}$", ha="center", va="bottom", fontsize=7.5, color=cQ)
 def _ar(x, y0_, y1_, col): a2.annotate("", xy=(x, y1_), xytext=(x, y0_), arrowprops=dict(arrowstyle="<->", mutation_scale=5, lw=.7, shrinkA=0, shrinkB=0, color=col))
 _ar(.32, 0, vbm, cX); a2.text(.2, -3.0, r"$\mathrm{IP_X}$", ha="right", va="center", fontsize=7.5, color=cX)
-_ar(1.08, 0, cbm, cX); a2.text(.96, -1.6, r"$\mathrm{EA_X}$", ha="right", va="center", fontsize=7.5, color=cX)
-_ar(2.72, dV, cbm, cQ); a2.text(2.84, -1.3, r"$\mathrm{EA_Q}$", ha="left", va="center", fontsize=7.5, color=cQ)
-_ar(3.5, dV, vbm, cQ); a2.text(3.62, -2.9, r"$\mathrm{IP_Q}$", ha="left", va="center", fontsize=7.5, color=cQ)
-a2.plot([L1, 4.25], [0, 0], c=cX, ls=":", lw=.6); _ar(4.2, 0, dV, "k")
-a2.text(4.3, dV / 2, r"$\mathrm{\Delta E_{vac}}$", ha="left", va="center", fontsize=7.5)
-a2.set_xlim(-.5, 5.05); a2.set_ylim(-6.5, 1.9)
+_ar(1.0, 0, cbm, cX); a2.text(1.1, -1.6, r"$\mathrm{EA_X}$", ha="left", va="center", fontsize=7.5, color=cX)
+_ar(2.85, dV, cbm, cQ); a2.text(2.97, -1.3, r"$\mathrm{EA_Q}$", ha="left", va="center", fontsize=7.5, color=cQ)
+_ar(3.9, dV, vbm, cQ); a2.text(4.02, -2.9, r"$\mathrm{IP_Q}$", ha="left", va="center", fontsize=7.5, color=cQ)
+a2.plot([L1, 4.75], [0, 0], c=cX, ls=":", lw=.6); _ar(4.7, 0, dV, "k")
+a2.text(4.8, dV / 2, r"$\mathrm{\Delta E_{vac}}$", ha="left", va="center", fontsize=7.5)
+a2.set_xlim(-.5, 5.55); a2.set_ylim(-6.5, 1.9)
 
 # ---------- (a3) four contacts
 ROW = [("X", EL["Se"]), ("A", EL["Al"]), ("M", EL["Sn"]), ("Q", EL["As"])]
